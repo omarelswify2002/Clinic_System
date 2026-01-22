@@ -31,7 +31,7 @@ export default function EditPrescription() {
       const data = await prescriptionApi.getPrescriptionById(prescriptionId);
       setPrescription(data);
       setMedications(data.medications || []);
-      setNotes(data.notes || '');
+      setNotes(data.additionalNotes || ''); // Changed from data.notes to data.additionalNotes
     } catch (error) {
       console.error('Failed to load prescription:', error);
     } finally {
@@ -79,7 +79,7 @@ export default function EditPrescription() {
 
       await prescriptionApi.updatePrescription(prescriptionId, {
         medications: validMedications,
-        notes,
+        additionalNotes: notes, // Changed from 'notes' to 'additionalNotes'
       });
 
       navigate(`/prescriptions/${prescriptionId}`);

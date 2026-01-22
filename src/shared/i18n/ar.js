@@ -96,6 +96,7 @@ export const ar = {
     patientDetails: 'تفاصيل المريض',
     addPatient: 'إضافة مريض',
     editPatient: 'تعديل بيانات المريض',
+    searchById: 'البحث برقم المريض',
     searchPatients: 'البحث عن مريض بالاسم أو الرقم القومي...',
     noPatients: 'لا يوجد مرضى',
     firstName: 'الاسم الأول',

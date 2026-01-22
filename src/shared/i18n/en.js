@@ -96,6 +96,7 @@ export const en = {
     patientDetails: 'Patient Details',
     addPatient: 'Add Patient',
     editPatient: 'Edit Patient',
+    searchById: 'Search by Patient ID',
     searchPatients: 'Search patients by name or national ID...',
     noPatients: 'No patients found',
     firstName: 'First Name',

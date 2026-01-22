@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { authApi } from '../services/api';
+import { httpClient } from '../services/http';
 import { SYNC_STATUS } from '../shared/constants';
 
 // Auth Store
@@ -14,6 +15,10 @@ export const useAuthStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const { user, token } = await authApi.login(username, password);
+
+      // Sync token with httpClient
+      httpClient.setAuthToken(token);
+
       set({ user, token, isAuthenticated: true, isLoading: false });
       return { success: true };
     } catch (error) {
@@ -26,9 +31,11 @@ export const useAuthStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       await authApi.logout();
-      set({ user: null, token: null, isAuthenticated: false, isLoading: false });
     } catch (error) {
       console.error('Logout error:', error);
+    } finally {
+      // Clear token from httpClient
+      httpClient.setAuthToken(null);
       set({ user: null, token: null, isAuthenticated: false, isLoading: false });
     }
   },
@@ -38,6 +45,8 @@ export const useAuthStore = create((set, get) => ({
     try {
       const result = await authApi.getCurrentUser();
       if (result) {
+        // Sync token with httpClient
+        httpClient.setAuthToken(result.token);
         set({ user: result.user, token: result.token, isAuthenticated: true, isLoading: false });
       } else {
         set({ isLoading: false });

@@ -422,7 +422,7 @@ export default function PatientDetails() {
                           </div>
                           <div className="flex-1 text-right">
                             <div className="font-medium text-gray-900 dark:text-gray-100">
-                              {prescription.medications.length} {t('prescriptions.medications')}
+                              {prescription.medicationCount || prescription.medications?.length || 0} {t('prescriptions.medications')}
                             </div>
                             <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                               {formatDate(prescription.prescriptionDate, 'PPp')}
@@ -430,9 +430,9 @@ export default function PatientDetails() {
                             <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
                               <span className="font-medium">{t('prescriptions.doctor')}:</span> {prescription.doctorName}
                             </div>
-                            {prescription.notes && (
+                            {prescription.additionalNotes && (
                               <div className="text-sm text-gray-600 dark:text-gray-400 mt-2 italic">
-                                {prescription.notes}
+                                {prescription.additionalNotes}
                               </div>
                             )}
                           </div>
@@ -442,7 +442,7 @@ export default function PatientDetails() {
                           {/* In LTR: Content on left, buttons on right */}
                           <div className="flex-1">
                             <div className="font-medium text-gray-900 dark:text-gray-100">
-                              {prescription.medications.length} {t('prescriptions.medications')}
+                              {prescription.medicationCount || prescription.medications?.length || 0} {t('prescriptions.medications')}
                             </div>
                             <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                               {formatDate(prescription.prescriptionDate, 'PPp')}
@@ -450,9 +450,9 @@ export default function PatientDetails() {
                             <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
                               <span className="font-medium">{t('prescriptions.doctor')}:</span> {prescription.doctorName}
                             </div>
-                            {prescription.notes && (
+                            {prescription.additionalNotes && (
                               <div className="text-sm text-gray-600 dark:text-gray-400 mt-2 italic">
-                                {prescription.notes}
+                                {prescription.additionalNotes}
                               </div>
                             )}
                           </div>

@@ -47,7 +47,7 @@ export default function PrescriptionList() {
     {
       key: 'medications',
       label: t('prescriptions.medications'),
-      render: (prescription) => prescription.medications.length,
+      render: (prescription) => prescription.medicationCount || prescription.medications?.length || 0,
     },
   ];
 

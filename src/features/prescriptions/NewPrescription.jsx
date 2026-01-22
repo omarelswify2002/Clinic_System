@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Save, Plus, Trash2, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, Button, Input } from '../../shared/ui';
-import { prescriptionApi, patientApi } from '../../services/api';
+import { prescriptionApi, patientApi, visitApi } from '../../services/api';
 import { useAuthStore } from '../../app/store';
 import { useTranslation } from '../../shared/i18n';
 import { useSettingsStore } from '../../app/settingsStore';
@@ -93,14 +93,28 @@ export default function NewPrescription() {
 
     try {
       setLoading(true);
+
+      // First, create a visit for this prescription
+      const visitData = {
+        patientId: selectedPatient.id,
+        doctorName: user.name,
+        chiefComplaint: 'Prescription visit',
+        diagnosis: '',
+        notes: notes,
+        status: 'completed', // Mark as completed since we're just creating a prescription
+      };
+
+      const visit = await visitApi.createVisit(visitData);
+
+      // Then create the prescription linked to this visit
       const prescriptionData = {
-        visitId: null, // Can be linked to a visit if needed
+        visitId: visit.id,
         patientId: selectedPatient.id,
         patient: selectedPatient,
         doctorId: user.id,
         doctorName: user.name,
         medications: medications.filter(med => med.name.trim() !== ''),
-        notes,
+        additionalNotes: notes,
       };
 
       await prescriptionApi.createPrescription(prescriptionData);

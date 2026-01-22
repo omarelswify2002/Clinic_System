@@ -53,6 +53,7 @@ export default function PrescriptionDetails() {
 
   return (
     <div className="space-y-6">
+      {/* Header - Hidden when printing */}
       <div className="flex items-center gap-4 print:hidden">
         <Button variant="outline" onClick={() => navigate('/prescriptions')}>
           <ArrowLeft size={20} />
@@ -77,7 +78,8 @@ export default function PrescriptionDetails() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg border border-gray-200 dark:border-gray-700">
+      {/* Prescription Content - This is what gets printed */}
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg border border-gray-200 dark:border-gray-700 print:border-0 print:shadow-none print:p-0">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-blue-600 dark:text-blue-400">{t('prescriptions.medicalPrescription')}</h2>
           <p className="text-gray-600 dark:text-gray-400 mt-1">{t('prescriptions.clinicName')}</p>
@@ -141,10 +143,10 @@ export default function PrescriptionDetails() {
           </div>
         </div>
 
-        {prescription.notes && (
+        {prescription.additionalNotes && (
           <div className="mb-8">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('prescriptions.additionalNotes')}</h3>
-            <p className="text-sm text-gray-700 dark:text-gray-300">{prescription.notes}</p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">{prescription.additionalNotes}</p>
           </div>
         )}
 

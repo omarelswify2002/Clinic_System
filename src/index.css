@@ -87,3 +87,97 @@ body {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
+
+/* Print Styles - Only print prescription content */
+@media print {
+  /* Page setup */
+  @page {
+    margin: 1.5cm;
+    size: A4 portrait;
+  }
+
+  /* Reset body for print */
+  body {
+    background: white !important;
+    color: black !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Remove all dark mode styles */
+  .dark body,
+  .dark * {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  /* Hide UI elements */
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Reset main container */
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Prescription card styling for print */
+  .bg-white,
+  .dark\:bg-gray-800 {
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Text colors for print */
+  h1, h2, h3, h4, h5, h6 {
+    color: #1f2937 !important;
+  }
+
+  p, span, div {
+    color: #374151 !important;
+  }
+
+  .text-gray-500,
+  .dark\:text-gray-400 {
+    color: #6b7280 !important;
+  }
+
+  .text-blue-600,
+  .dark\:text-blue-400 {
+    color: #2563eb !important;
+  }
+
+  /* Borders for print */
+  .border,
+  .border-gray-200,
+  .dark\:border-gray-700 {
+    border-color: #d1d5db !important;
+  }
+
+  .border-t {
+    border-top: 1px solid #d1d5db !important;
+  }
+
+  /* Prevent page breaks inside important elements */
+  .border.rounded-lg,
+  .grid.grid-cols-2 {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Ensure medication items don't break across pages */
+  .space-y-4 > div {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Remove unnecessary spacing */
+  .space-y-6 {
+    gap: 1rem !important;
+  }
+}

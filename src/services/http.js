@@ -1,16 +1,31 @@
+import { API_CONFIG } from './api/config';
+import { storage } from '../shared/utils';
+
 class HttpClient {
   constructor(baseURL = '') {
     this.baseURL = baseURL;
     this.defaultHeaders = {
       'Content-Type': 'application/json',
     };
+
+    // Initialize with stored token if available
+    this.initializeAuth();
+  }
+
+  initializeAuth() {
+    const token = storage.get('auth_token');
+    if (token) {
+      this.setAuthToken(token);
+    }
   }
 
   setAuthToken(token) {
     if (token) {
       this.defaultHeaders['Authorization'] = `Bearer ${token}`;
+      storage.set('auth_token', token);
     } else {
       delete this.defaultHeaders['Authorization'];
+      storage.remove('auth_token');
     }
   }
 
@@ -26,12 +41,35 @@ class HttpClient {
 
     try {
       const response = await fetch(url, config);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
+
+      // Handle different response types
+      const contentType = response.headers.get('content-type');
+      let data;
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        data = await response.text();
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        // Extract error message from response
+        let errorMessage = data?.message || data?.error || `HTTP Error: ${response.status}`;
+
+        // If there are validation details, include them
+        if (data?.details && Array.isArray(data.details)) {
+          errorMessage = `${errorMessage}: ${data.details.join(', ')}`;
+        }
+
+        console.error('API Error Response:', {
+          status: response.status,
+          url,
+          data,
+          errorMessage
+        });
+        throw new Error(errorMessage);
+      }
+
       return data;
     } catch (error) {
       console.error('HTTP Request failed:', error);
@@ -72,5 +110,6 @@ class HttpClient {
   }
 }
 
-export const httpClient = new HttpClient();
+// Initialize with base URL from config
+export const httpClient = new HttpClient(API_CONFIG.BASE_URL);
 

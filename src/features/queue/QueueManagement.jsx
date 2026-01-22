@@ -17,6 +17,7 @@ const statusVariants = {
 
 export default function QueueManagement() {
   const [queue, setQueue] = useState([]);
+  const [stats, setStats] = useState({ total: 0, waiting: 0, inProgress: 0, completed: 0 });
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const { t } = useTranslation();
@@ -40,8 +41,13 @@ export default function QueueManagement() {
   const loadQueue = async () => {
     try {
       setLoading(true);
-      const data = await queueApi.getTodayQueue();
-      setQueue(data);
+      // Load both queue and stats
+      const [queueData, statsData] = await Promise.all([
+        queueApi.getTodayQueue(),
+        queueApi.getQueueStats(),
+      ]);
+      setQueue(queueData);
+      setStats(statsData);
     } catch (error) {
       console.error('Failed to load queue:', error);
     } finally {
@@ -75,10 +81,6 @@ export default function QueueManagement() {
     loadQueue();
   };
 
-  const waitingQueue = queue.filter(q => q.status === QUEUE_STATUS.WAITING);
-  const inProgressQueue = queue.filter(q => q.status === QUEUE_STATUS.IN_PROGRESS);
-  const completedQueue = queue.filter(q => q.status === QUEUE_STATUS.COMPLETED);
-
   return (
     <div className="space-y-6">
       <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
@@ -101,19 +103,19 @@ export default function QueueManagement() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700">
           <div className="text-center">
-            <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{waitingQueue.length}</div>
+            <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{stats.waiting}</div>
             <div className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">{t('queue.waiting')}</div>
           </div>
         </Card>
         <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700">
           <div className="text-center">
-            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{inProgressQueue.length}</div>
+            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{stats.inProgress}</div>
             <div className="text-sm text-blue-700 dark:text-blue-300 mt-1">{t('queue.inProgress')}</div>
           </div>
         </Card>
         <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700">
           <div className="text-center">
-            <div className="text-3xl font-bold text-green-600 dark:text-green-400">{completedQueue.length}</div>
+            <div className="text-3xl font-bold text-green-600 dark:text-green-400">{stats.completed}</div>
             <div className="text-sm text-green-700 dark:text-green-300 mt-1">{t('queue.completed')}</div>
           </div>
         </Card>
