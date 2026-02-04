@@ -8,6 +8,7 @@ import { matchesQuery } from '../../shared/utils/search';
 import { VISIT_STATUS } from '../../shared/constants';
 import { useTranslation } from '../../shared/i18n';
 import { useSettingsStore } from '../../app/settingsStore';
+import AddToQueueModal from '../queue/AddToQueueModal';
 
 const statusVariants = {
   [VISIT_STATUS.SCHEDULED]: 'info',
@@ -19,7 +20,7 @@ const statusVariants = {
 export default function VisitList() {
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
-  // const [isAddToQueueModalOpen, setIsAddToQueueModalOpen] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 0 });
   const [searchQuery, setSearchQuery] = useState('');
@@ -102,6 +103,22 @@ export default function VisitList() {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+  
+  const loadQueue = async () => {
+    try {
+      setLoading(true);
+    } catch (error) {
+      console.error('Failed to load queue:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePatientAdded = () => {
+    setShowAddModal(false);
+    loadQueue();
+    navigate('/queue');
+  };
 
   const columns = [
     {
@@ -136,16 +153,30 @@ export default function VisitList() {
 
   return (
     <div className="space-y-6">
-      <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
-        <div className={isRTL ? 'text-right' : ''}>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('visits.title')}</h1>
-          <p className="text-gray-600 dark:text-gray-100 mt-1">{t('visits.viewManageVisits')}</p>
+      {isRTL ? (
+        <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <Button onClick={() => setShowAddModal(true)}>
+            <Plus size={20} />
+            {t('visits.newVisit')}
+          </Button>
+          <div className={isRTL ? 'text-right' : ''}>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('visits.title')}</h1>
+            <p className="text-gray-600 dark:text-gray-100 mt-1">{t('visits.viewManageVisits')}</p>
+          </div>
         </div>
-        <Button onClick={() => navigate('/visits/new')}>
-          <Plus size={20} />
-          {t('visits.newVisit')}
-        </Button>
-      </div>
+        ) : (
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={isRTL ? 'text-right' : ''}>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('visits.title')}</h1>
+              <p className="text-gray-600 dark:text-gray-100 mt-1">{t('visits.viewManageVisits')}</p>
+            </div>
+            <Button onClick={() => setShowAddModal(true)}>
+              <Plus size={20} />
+              {t('visits.newVisit')}
+            </Button>
+          </div>
+        )
+      }
       
       {/* Search Bar */}
       <Card>
@@ -205,6 +236,12 @@ export default function VisitList() {
           />
         )}
       </Card>
+
+      <AddToQueueModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={handlePatientAdded}
+      />
     </div>
   );
 }

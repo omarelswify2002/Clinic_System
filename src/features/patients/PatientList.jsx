@@ -93,6 +93,7 @@ export default function PatientList() {
           data = data.filter((p) =>
             matchesQuery(
               searchQuery,
+              p.id,
               p.nationalId,
               p.firstName,
               p.lastName,
@@ -163,19 +164,33 @@ export default function PatientList() {
 
   return (
     <div className="space-y-6">
-      <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
-        <div className={isRTL ? 'text-right' : ''}>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('patients.patientList')}</h1>
-          <p className="text-gray-600 dark:text-gray-100 mt-1">{t('patients.patientList')}</p>
+      {isRTL ? (
+        <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <PermissionGuard permission={PERMISSIONS.ADD_PATIENT}>
+            <Button onClick={() => setShowAddModal(true)}>
+              <Plus size={20} />
+              {t('patients.addPatient')}
+            </Button>
+          </PermissionGuard>
+          <div className={isRTL ? 'text-right' : ''}>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('patients.patientList')}</h1>
+            <p className="text-gray-600 dark:text-gray-100 mt-1">{t('patients.patientList')}</p>
+          </div>
         </div>
-        <PermissionGuard permission={PERMISSIONS.ADD_PATIENT}>
-          <Button onClick={() => setShowAddModal(true)}>
-            <Plus size={20} />
-            {t('patients.addPatient')}
-          </Button>
-        </PermissionGuard>
-      </div>
-
+        ) : (
+        <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className={isRTL ? 'text-right' : ''}>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('patients.patientList')}</h1>
+            <p className="text-gray-600 dark:text-gray-100 mt-1">{t('patients.patientList')}</p>
+          </div>
+          <PermissionGuard permission={PERMISSIONS.ADD_PATIENT}>
+            <Button onClick={() => setShowAddModal(true)}>
+              <Plus size={20} />
+              {t('patients.addPatient')}
+            </Button>
+          </PermissionGuard>
+        </div>
+      )}
       <Card>
         <div className="mb-6 space-y-4">
           {/* ID-Only Search */}
@@ -210,18 +225,20 @@ export default function PatientList() {
 
           {/* Date Filter */}
           <div className="flex gap-2 items-center">
-            <div className="relative flex-1">
-              <Calendar
-                className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-green-500 dark:text-green-400`}
-                size={20}
-              />
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                placeholder="Filter by visit date"
-                className={`w-full ${isRTL ? 'pr-10 pl-4' : 'pl-10 pr-4'} py-2 border border-green-300 dark:border-green-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500`}
-              />
+            <div className="flex-1">
+              <div className="relative">
+                <Calendar
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-500 dark:text-green-400 pointer-events-none"
+                  size={20}
+                />
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  placeholder="Filter by visit date"
+                  className={`w-full pl-10 pr-4 py-2 border border-green-300 dark:border-green-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500`}
+                />
+              </div>
             </div>
             {selectedDate && (
               <Button

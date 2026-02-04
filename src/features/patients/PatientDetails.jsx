@@ -6,6 +6,7 @@ import { patientApi, visitApi, prescriptionApi } from '../../services/api';
 import { formatDate, PERMISSIONS } from '../../shared/utils';
 import { useTranslation } from '../../shared/i18n';
 import { useSettingsStore } from '../../app/settingsStore';
+import AddToQueueModal from '../queue/AddToQueueModal';
 
 const mapStatusKey = (status) => (status === 'in_progress' ? 'inProgress' : status);
 
@@ -16,13 +17,15 @@ export default function PatientDetails() {
   const [visits, setVisits] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [canCreateNewPrescription, setCanCreateNewPrescription] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  // const [canCreateNewPrescription, setCanCreateNewPrescription] = useState(true);
   const { t } = useTranslation();
   const { direction } = useSettingsStore();
   const isRTL = direction === 'rtl';
 
   useEffect(() => {
     loadPatientData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nationalId]);
 
   const loadPatientData = async () => {
@@ -38,24 +41,6 @@ export default function PatientDetails() {
       // Load prescriptions - use patient.id not nationalId
       const prescriptionsData = await prescriptionApi.getPatientPrescriptions(patientData.id);
       setPrescriptions(prescriptionsData);
-
-      // Check if patient can have a new prescription (24-hour rule)
-      if (prescriptionsData.length > 0) {
-        // Get the most recent prescription
-        const latestPrescription = prescriptionsData.sort(
-          (a, b) => new Date(b.prescriptionDate) - new Date(a.prescriptionDate)
-        )[0];
-
-        // Calculate hours since last prescription
-        const hoursSinceLastPrescription =
-          (new Date() - new Date(latestPrescription.prescriptionDate)) / (1000 * 60 * 60);
-
-        // Allow new prescription only if more than 24 hours have passed
-        setCanCreateNewPrescription(hoursSinceLastPrescription >= 24);
-      } else {
-        // No prescriptions yet, allow creating one
-        setCanCreateNewPrescription(true);
-      }
     } catch (error) {
       console.error('Failed to load patient data:', error);
     } finally {
@@ -81,6 +66,22 @@ export default function PatientDetails() {
       </div>
     );
   }
+  
+  const loadQueue = async () => {
+    try {
+      setLoading(true);
+    } catch (error) {
+      console.error('Failed to load queue:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePatientAdded = () => {
+    setShowAddModal(false);
+    loadQueue();
+    navigate('/queue');
+  };
 
   return (
     <div className="space-y-6">
@@ -98,12 +99,12 @@ export default function PatientDetails() {
         </div>
         <div className="flex gap-2">
           <PermissionGuard permission={PERMISSIONS.CREATE_VISIT}>
-            <Button variant="primary" onClick={() => navigate(`/visits/new?patientId=${patient.nationalId}`)}>
+            <Button variant="primary" onClick={() => setShowAddModal(true)}>
               <FileText size={18} />
               {t('visits.newVisit')}
             </Button>
           </PermissionGuard>
-          <PermissionGuard permission={PERMISSIONS.CREATE_PRESCRIPTION}>
+          {/* <PermissionGuard permission={PERMISSIONS.CREATE_PRESCRIPTION}>
             <Button
               variant="success"
               onClick={() => navigate(`/prescriptions/new?patientId=${patient.nationalId}`)}
@@ -113,7 +114,7 @@ export default function PatientDetails() {
               <Pill size={18} />
               {t('prescriptions.newPrescription')}
             </Button>
-          </PermissionGuard>
+          </PermissionGuard> */}
         </div>
       </div>
 
@@ -121,6 +122,23 @@ export default function PatientDetails() {
         <div className="lg:col-span-1">
           <Card title={t('patients.personalInfo')}>
             <div className={`space-y-4 ${isRTL ? 'text-right' : ''}`}>
+              <div className={`flex items-center gap-3 ${isRTL ? 'justify-end' : ''}`}>
+                {isRTL ? (
+                  <>
+                  <div className={isRTL ? 'text-right' : ''}>
+                    <div className="text-sm text-gray-500 dark:text-gray-200">{t('patients.id')}</div>
+                    <div className="font-medium text-black dark:text-white">{patient.id}</div>
+                  </div>
+                  <User size={18} className="text-gray-400 dark:text-gray-300" />
+                </>) : (<>
+                  <User size={18} className="text-gray-400 dark:text-gray-300" />
+                  <div className={isRTL ? 'text-right' : ''}>
+                    <div className="text-sm text-gray-500 dark:text-gray-200">{t('patients.id')}</div>
+                    <div className="font-medium text-black dark:text-white">{patient.id}</div>
+                  </div>
+                </>)}
+              </div>
+
               <div className={`flex items-center gap-3 ${isRTL ? 'justify-end' : ''}`}>
                 {isRTL ? (
                   <>
@@ -376,20 +394,20 @@ export default function PatientDetails() {
             title={t('patients.prescriptions')}
             collapsible
             defaultExpanded={true}
-            actions={
-              <PermissionGuard permission={PERMISSIONS.CREATE_PRESCRIPTION}>
-                <Button
-                  variant="success"
-                  size="sm"
-                  onClick={() => navigate(`/prescriptions/new?patientId=${patient.nationalId}`)}
-                  disabled={!canCreateNewPrescription}
-                  title={!canCreateNewPrescription ? t('prescriptions.prescriptionCreatedRecently') : t('prescriptions.createPrescription')}
-                >
-                  <Pill size={16} />
-                  {t('prescriptions.newPrescription')}
-                </Button>
-              </PermissionGuard>
-            }
+            // actions={
+            //   <PermissionGuard permission={PERMISSIONS.CREATE_PRESCRIPTION}>
+            //     <Button
+            //       variant="success"
+            //       size="sm"
+            //       onClick={() => navigate(`/prescriptions/new?patientId=${patient.nationalId}`)}
+            //       disabled={!canCreateNewPrescription}
+            //       title={!canCreateNewPrescription ? t('prescriptions.prescriptionCreatedRecently') : t('prescriptions.createPrescription')}
+            //     >
+            //       <Pill size={16} />
+            //       {t('prescriptions.newPrescription')}
+            //     </Button>
+            //   </PermissionGuard>
+            // }
           >
             {prescriptions.length === 0 ? (
               <p className="text-gray-500 text-center py-8">{t('patients.noPrescriptions')}</p>
@@ -479,6 +497,12 @@ export default function PatientDetails() {
               </div>
             )}
           </Card>
+
+          <AddToQueueModal
+            isOpen={showAddModal}
+            onClose={() => setShowAddModal(false)}
+            onSuccess={handlePatientAdded}
+          />
         </div>
       </div>
     </div>

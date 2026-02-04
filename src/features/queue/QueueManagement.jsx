@@ -88,23 +88,41 @@ export default function QueueManagement() {
 
   return (
     <div className="space-y-6">
-      <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
-        <div className={isRTL ? 'text-right' : ''}>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('queue.queueManagement')}</h1>
-          <p className="text-gray-600 dark:text-gray-100 mt-1">{t('queue.manageTodayQueue')}</p>
+      {isRTL ? (
+        <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className={`flex gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Button variant="outline" onClick={loadQueue}>
+              <RefreshCw size={20} />
+              {t('queue.refresh')}
+            </Button>
+            <Button onClick={() => setShowAddModal(true)}>
+              <Plus size={20} />
+              {t('queue.addToQueue')}
+            </Button>
+          </div>
+          <div className={isRTL ? 'text-right' : ''}>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('queue.queueManagement')}</h1>
+            <p className="text-gray-600 dark:text-gray-100 mt-1">{t('queue.manageTodayQueue')}</p>
+          </div>
         </div>
-        <div className={`flex gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
-          <Button variant="outline" onClick={loadQueue}>
-            <RefreshCw size={20} />
-            {t('queue.refresh')}
-          </Button>
-          <Button onClick={() => setShowAddModal(true)}>
-            <Plus size={20} />
-            {t('queue.addToQueue')}
-          </Button>
+        ) : (
+        <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className={isRTL ? 'text-right' : ''}>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('queue.queueManagement')}</h1>
+            <p className="text-gray-600 dark:text-gray-100 mt-1">{t('queue.manageTodayQueue')}</p>
+          </div>
+          <div className={`flex gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Button variant="outline" onClick={loadQueue}>
+              <RefreshCw size={20} />
+              {t('queue.refresh')}
+            </Button>
+            <Button onClick={() => setShowAddModal(true)}>
+              <Plus size={20} />
+              {t('queue.addToQueue')}
+            </Button>
+          </div>
         </div>
-      </div>
-
+      )}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700">
           <div className="text-center">

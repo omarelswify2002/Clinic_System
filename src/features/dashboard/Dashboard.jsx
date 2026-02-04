@@ -49,7 +49,7 @@ export default function Dashboard() {
   const statCards = [
     {
       title: t('dashboard.totalPatients'),
-      value: stats.patients.total,
+      value: stats.patients.total + 1,
       subtitle: `${stats.patients.newToday} ${t('dashboard.newToday')}`,
       icon: Users,
       color: 'blue',

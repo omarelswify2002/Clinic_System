@@ -6,6 +6,7 @@ import { useTranslation } from '../../shared/i18n';
 
 export default function AddToQueueModal({ isOpen, onClose, onSuccess }) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [idSearch, setIdSearch] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [notes, setNotes] = useState('');
@@ -15,10 +16,36 @@ export default function AddToQueueModal({ isOpen, onClose, onSuccess }) {
   const { t } = useTranslation();
 
   const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim() && !idSearch.trim()) return;
 
     try {
       setSearching(true);
+
+      // If ID-only search is used, support exact numeric ID (#15 or 15) or nationalId substring
+      if (idSearch.trim()) {
+        const raw = idSearch.trim();
+        const digitsOnly = /^#?\d+$/.test(raw);
+        const digits = raw.replace(/\D/g, '');
+
+        if (digitsOnly && digits) {
+          try {
+            const patient = await patientApi.getPatientById(digits);
+            setSearchResults(patient ? [patient] : []);
+          } catch (err) {
+            // not found
+            console.error('Patient not found:', err);
+            setSearchResults([]);
+          }
+        } else {
+          const results = await patientApi.searchPatients(raw);
+          const q = raw.toLowerCase();
+          setSearchResults(results.filter(p => p.nationalId?.toLowerCase().includes(q)));
+        }
+
+        return;
+      }
+
+      // Fallback: general name/id/phone search
       const results = await patientApi.searchPatients(searchQuery);
       setSearchResults(results);
     } catch (error) {
@@ -46,6 +73,7 @@ export default function AddToQueueModal({ isOpen, onClose, onSuccess }) {
 
   const resetForm = () => {
     setSearchQuery('');
+    setIdSearch('');
     setSearchResults([]);
     setSelectedPatient(null);
     setNotes('');
@@ -62,9 +90,23 @@ export default function AddToQueueModal({ isOpen, onClose, onSuccess }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         {!selectedPatient ? (
           <>
+            {/* ID-only search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500" size={20} />
+            <input
+              type="text"
+              placeholder={`${t('patients.searchById')} (#15)`}
+              value={idSearch}
+              onChange={(e) => setIdSearch(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleSearch())}
+              className="w-full pl-10 pr-4 py-2 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+            />
+          </div>
+
+            { /* search bar */}
             <div className="flex gap-2">
               <Input
-                placeholder={t('queue.searchByNameOrId')}
+                placeholder={t('queue.searchByNameOrIdOrPhone')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleSearch())}
@@ -94,7 +136,7 @@ export default function AddToQueueModal({ isOpen, onClose, onSuccess }) {
               </div>
             )}
 
-            {searchQuery && searchResults.length === 0 && !searching && (
+            {(searchQuery || idSearch) && searchResults.length === 0 && !searching && (
               <div className="text-center py-4 text-gray-500 dark:text-gray-400">
                 {t('patients.noPatients')}
               </div>

@@ -12,10 +12,10 @@ import PatientList from '../features/patients/PatientList';
 import PatientDetails from '../features/patients/PatientDetails';
 import QueueManagement from '../features/queue/QueueManagement';
 import VisitList from '../features/visits/VisitList';
-import NewVisit from '../features/visits/NewVisit';
+// import NewVisit from '../features/visits/NewVisit';
 import VisitDetails from '../features/visits/VisitDetails';
 import PrescriptionList from '../features/prescriptions/PrescriptionList';
-import NewPrescription from '../features/prescriptions/NewPrescription';
+// import NewPrescription from '../features/prescriptions/NewPrescription';
 import PrescriptionDetails from '../features/prescriptions/PrescriptionDetails';
 import EditPrescription from '../features/prescriptions/EditPrescription';
 import WaitingRoomDisplay from '../features/terminal/WaitingRoomDisplay';
@@ -66,10 +66,10 @@ export const router = createBrowserRouter([
         path: ROUTES.VISITS,
         element: <VisitList />,
       },
-      {
-        path: ROUTES.VISIT_NEW,
-        element: <NewVisit />,
-      },
+      // {
+      //   path: ROUTES.VISIT_NEW,
+      //   element: <NewVisit />,
+      // },
       {
         path: ROUTES.VISIT_DETAILS,
         element: <VisitDetails />,
@@ -78,10 +78,10 @@ export const router = createBrowserRouter([
         path: ROUTES.PRESCRIPTIONS,
         element: <PrescriptionList />,
       },
-      {
-        path: ROUTES.PRESCRIPTION_NEW,
-        element: <NewPrescription />,
-      },
+      // {
+      //   path: ROUTES.PRESCRIPTION_NEW,
+      //   element: <NewPrescription />,
+      // },
       {
         path: ROUTES.PRESCRIPTION_EDIT,
         element: <EditPrescription />,
