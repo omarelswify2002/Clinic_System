@@ -28,7 +28,7 @@ export const adaptPatient = (backendPatient) => {
     gender: backendPatient.gender ? backendPatient.gender.toLowerCase() : 'male',
     phone: backendPatient.phone || '',
     email: '', // Backend doesn't have email
-    address: '', // Backend doesn't have address
+    address: backendPatient.address || '', // Backend has address field
     bloodType: backendPatient.bloodType || '',
     allergies: [], // Backend doesn't have allergies
     chronicDiseases: [], // Backend doesn't have chronic diseases
@@ -57,6 +57,7 @@ export const adaptPatientToBackend = (frontendPatient) => {
     phone: frontendPatient.phone,
     bloodType: frontendPatient.bloodType || null,
     nationalID: frontendPatient.nationalId || null,
+    address: frontendPatient.address || null,
   };
 
   console.log('Adapting patient to backend:', {

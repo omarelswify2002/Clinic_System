@@ -126,6 +126,7 @@ export const ar = {
     completed: 'مكتمل',
     female: 'أنثى',
     years: 'سنة',
+    noPatientsFound: 'لم يتم العثور على مرضى',
   },
 
   // Queue
@@ -158,6 +159,7 @@ export const ar = {
     urgent: 'عاجل',
     notes: 'ملاحظات',
     reasonForVisit: 'سبب الزيارة (اختياري)',
+    onlyDoctorCanComplete: 'الطبيب فقط يمكنه إكمال الزيارة',
   },
 
   // Visits
@@ -204,6 +206,7 @@ export const ar = {
     diagnosisPlaceholder: 'مثال: عدوى فيروسية',
     notesPlaceholder: 'ملاحظات إضافية حول الزيارة...',
     createVisit: 'إنشاء زيارة',
+    searchPlaceholder: 'البحث بالاسم أو الشكوى أو التشخيص...',
   },
 
   // Prescriptions
@@ -247,6 +250,7 @@ export const ar = {
     createNewPrescription: 'إنشاء وصفة طبية جديدة للمريض',
     createPrescription: 'إنشاء وصفة طبية',
     notesPlaceholder: 'ملاحظات أو تعليمات إضافية...',
+    searchPlaceholder: 'البحث باسم المريض أو اسم الطبيب...',
   },
 
   // Settings

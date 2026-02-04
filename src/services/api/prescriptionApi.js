@@ -4,39 +4,70 @@ import { httpClient } from '../http';
 import { adaptPrescription, adaptPrescriptionToBackend } from './adapters';
 
 const realPrescriptionApi = {
-  getAllPrescriptions: async () => {
-    const prescriptions = await httpClient.get('/prescriptions');
-    return prescriptions.map(adaptPrescription);
+  /** getAllPrescriptions supports legacy and paginated calls */
+  getAllPrescriptions: async (page, limit) => {
+    // legacy full-list when called with no args
+    if (typeof page === 'undefined' && typeof limit === 'undefined') {
+      const resp = await httpClient.get(`/prescriptions?page=1&limit=999999`);
+      const list = resp?.data || resp || [];
+      return list.map(adaptPrescription);
+    }
+
+    // normalize defaults for paginated call
+    page = typeof page === 'undefined' ? 1 : page;
+    limit = typeof limit === 'undefined' ? 10 : limit;
+
+    const resp = await httpClient.get(`/prescriptions?page=${page}&limit=${limit}`);
+    return {
+      data: (resp.data || []).map(adaptPrescription),
+      pagination: resp.pagination || { page, limit, total: (resp.pagination && resp.pagination.total) || (resp.data || []).length }
+    };
   },
 
   getPrescriptionById: async (id) => {
-    const prescription = await httpClient.get(`/prescriptions/${id}`);
+    const resp = await httpClient.get(`/prescriptions/${id}`);
+    const prescription = resp?.data || resp;
     return adaptPrescription(prescription);
   },
 
   getPatientPrescriptions: async (patientId) => {
-    // Use the new backend endpoint that filters by patient ID
-    const prescriptions = await httpClient.get(`/prescriptions/patient/${patientId}`);
-    return prescriptions.map(adaptPrescription);
+    try {
+      const resp = await httpClient.get(`/prescriptions/patient/${patientId}`);
+      const list = resp?.data || resp || [];
+      return list.map(adaptPrescription);
+    } catch {
+      const resp = await realPrescriptionApi.getAllPrescriptions(1, 999999);
+      const list = resp.data || resp;
+      const filtered = list.filter(p => String(p.patientId) === String(patientId));
+      return filtered.map(adaptPrescription);
+    }
   },
 
   getVisitPrescription: async (visitId) => {
-    // Backend doesn't have this endpoint, get all and filter
-    const prescriptions = await httpClient.get('/prescriptions');
-    const filtered = prescriptions.filter(p => String(p.visitId) === String(visitId));
-    return filtered.length > 0 ? adaptPrescription(filtered[0]) : null;
+    try {
+      const resp = await httpClient.get(`/prescriptions/visit/${visitId}`);
+      const presc = resp?.data || resp;
+      return presc ? adaptPrescription(presc) : null;
+    } catch {
+      const resp = await realPrescriptionApi.getAllPrescriptions(1, 999999);
+      const list = resp.data || resp;
+      const found = list.find(p => String(p.visitId) === String(visitId));
+      return found ? adaptPrescription(found) : null;
+    }
   },
 
   createPrescription: async (prescriptionData) => {
     const backendData = adaptPrescriptionToBackend(prescriptionData);
-    const prescription = await httpClient.post('/prescriptions', backendData);
-    return adaptPrescription(prescription);
+    const resp = await httpClient.post('/prescriptions', backendData);
+    const presc = resp?.data || resp;
+    return adaptPrescription(presc);
   },
 
   updatePrescription: async (id, prescriptionData) => {
     const backendData = adaptPrescriptionToBackend(prescriptionData);
-    const prescription = await httpClient.put(`/prescriptions/${id}`, backendData);
-    return adaptPrescription(prescription);
+    const resp = await httpClient.put(`/prescriptions/${id}`, backendData);
+    const presc = resp?.data || resp;
+    return adaptPrescription(presc);
   },
 };
 

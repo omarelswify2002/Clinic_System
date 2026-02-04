@@ -125,6 +125,7 @@ export const en = {
     male: 'Male',
     female: 'Female',
     years: 'years',
+    noPatientsFound: 'No patients found',
   },
 
   // Queue
@@ -157,6 +158,7 @@ export const en = {
     urgent: 'Urgent',
     notes: 'Notes',
     reasonForVisit: 'Reason for visit (optional)',
+    onlyDoctorCanComplete: 'Only doctors can complete visits',
   },
 
   // Visits
@@ -203,6 +205,7 @@ export const en = {
     diagnosisPlaceholder: 'e.g., Viral infection',
     notesPlaceholder: 'Additional notes about the visit...',
     createVisit: 'Create Visit',
+    searchPlaceholder: 'Search by name, complaint, or diagnosis...',
   },
 
   // Prescriptions
@@ -246,6 +249,7 @@ export const en = {
     createNewPrescription: 'Create a new prescription for a patient',
     createPrescription: 'Create Prescription',
     notesPlaceholder: 'Additional notes or instructions...',
+    searchPlaceholder: 'Search by patient name or doctor name...',
   },
 
   // Settings

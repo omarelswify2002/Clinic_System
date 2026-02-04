@@ -18,6 +18,7 @@ import PrescriptionList from '../features/prescriptions/PrescriptionList';
 import NewPrescription from '../features/prescriptions/NewPrescription';
 import PrescriptionDetails from '../features/prescriptions/PrescriptionDetails';
 import EditPrescription from '../features/prescriptions/EditPrescription';
+import WaitingRoomDisplay from '../features/terminal/WaitingRoomDisplay';
 
 // Protected Route Component
 import ProtectedRoute from './ProtectedRoute';
@@ -44,6 +45,10 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.DASHBOARD,
         element: <Dashboard />,
+      },
+      {
+        path: ROUTES.WAITING_ROOM,
+        element: <WaitingRoomDisplay />,
       },
       {
         path: ROUTES.PATIENTS,

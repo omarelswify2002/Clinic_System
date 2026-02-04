@@ -7,6 +7,7 @@ import { formatRelativeTime } from '../../shared/utils';
 import AddToQueueModal from './AddToQueueModal';
 import { useTranslation } from '../../shared/i18n';
 import { useSettingsStore } from '../../app/settingsStore';
+import { useAuthStore } from '../../app/store';
 
 const statusVariants = {
   [QUEUE_STATUS.WAITING]: 'warning',
@@ -23,6 +24,10 @@ export default function QueueManagement() {
   const { t } = useTranslation();
   const { direction } = useSettingsStore();
   const isRTL = direction === 'rtl';
+  const user = useAuthStore((state) => state.user);
+
+  // Only doctors can complete visits
+  const canComplete = user?.role === 'doctor' || user?.role === 'admin';
 
   const statusLabels = {
     [QUEUE_STATUS.WAITING]: t('queue.waiting'),
@@ -165,6 +170,8 @@ export default function QueueManagement() {
                           size="sm"
                           variant="success"
                           onClick={() => handleStatusChange(item.id, QUEUE_STATUS.COMPLETED)}
+                          disabled={!canComplete}
+                          title={!canComplete ? t('queue.onlyDoctorCanComplete') : ''}
                         >
                           {t('queue.completed')}
                         </Button>
@@ -252,6 +259,8 @@ export default function QueueManagement() {
                           size="sm"
                           variant="success"
                           onClick={() => handleStatusChange(item.id, QUEUE_STATUS.COMPLETED)}
+                          disabled={!canComplete}
+                          title={!canComplete ? t('queue.onlyDoctorCanComplete') : ''}
                         >
                           {t('queue.completed')}
                         </Button>

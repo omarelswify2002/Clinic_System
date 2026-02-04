@@ -8,4 +8,6 @@ export { default as StatusIndicator } from './StatusIndicator';
 export { default as PermissionGuard } from './PermissionGuard';
 export { default as ThemeToggle } from './ThemeToggle';
 export { default as LanguageSwitcher } from './LanguageSwitcher';
+export { default as Pagination } from './Pagination';
+export { default as DatePicker } from './DatePicker';
 

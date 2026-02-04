@@ -11,14 +11,19 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login, isLoading, error, isAuthenticated, clearError } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(ROUTES.DASHBOARD);
+      if (user?.username === 'terminal' || user?.role === 'terminal') {
+        navigate(ROUTES.WAITING_ROOM);
+      } else {
+        navigate(ROUTES.DASHBOARD);
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   useEffect(() => {
     return () => clearError();
@@ -28,7 +33,7 @@ export default function Login() {
     e.preventDefault();
     const result = await login(username, password);
     if (result.success) {
-      navigate(ROUTES.DASHBOARD);
+      // navigation handled in useEffect
     }
   };
 
@@ -140,6 +145,10 @@ export default function Login() {
             <div className="flex items-center gap-2">
               <span className="font-semibold min-w-[70px]">Admin:</span>
               <span className="text-blue-600 dark:text-blue-400">admin / admin123</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold min-w-[70px]">Terminal:</span>
+              <span className="text-blue-600 dark:text-blue-400">terminal / terminal123</span>
             </div>
           </div>
         </motion.div>
