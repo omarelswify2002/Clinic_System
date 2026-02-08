@@ -1,18 +1,21 @@
 import { useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import { useUIStore, useSystemStore, useAuthStore } from '../../app/store';
 import { useSettingsStore } from '../../app/settingsStore';
+import { ROUTES } from '../constants';
 
 export default function MainLayout() {
   const sidebarOpen = useUIStore((state) => state.sidebarOpen);
   const direction = useSettingsStore((state) => state.direction);
   const initializeNetworkListeners = useSystemStore((state) => state.initializeNetworkListeners);
   const user = useAuthStore((state) => state.user);
+  const location = useLocation();
   const isTerminal = user?.username === 'terminal' || user?.role === 'terminal';
   const isDevice = user?.username === 'device' || user?.role === 'device';
-  const isSpecialDisplay = isTerminal || isDevice;
+  const isWaitingRoom = location.pathname === ROUTES.WAITING_ROOM;
+  const isSpecialDisplay = isTerminal || isDevice || isWaitingRoom;
   const isRTL = direction === 'rtl';
 
   // Initialize network status listeners
@@ -30,10 +33,12 @@ export default function MainLayout() {
         </div>
       )}
       <div className={`flex flex-col flex-1 transition-all duration-300 print:m-0 ${
-        // Apply margin when sidebar is open on all screen sizes
-        sidebarOpen
-          ? (isRTL ? 'mr-64' : 'ml-64')
-          : (isRTL ? 'mr-0' : 'ml-0')
+        // Apply margin when sidebar is open on all screen sizes (skip for waiting room)
+        isWaitingRoom
+          ? (isRTL ? 'mr-0' : 'ml-0')
+          : (sidebarOpen
+              ? (isRTL ? 'mr-64' : 'ml-64')
+              : (isRTL ? 'mr-0' : 'ml-0'))
       }`}>
         {/* Header - Hidden when printing (hidden for terminal/device users) */}
         {!isSpecialDisplay && (

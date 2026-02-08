@@ -26,12 +26,14 @@ export default function VisitDetails() {
 
   useEffect(() => {
     loadVisit();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visitId]);
 
   const loadVisit = async () => {
     try {
       setLoading(true);
       const data = await visitApi.getVisitById(visitId);
+      console.log('dataVisitDetails>>>',data);
       setVisit(data);
     } catch (error) {
       console.error('Failed to load visit:', error);
@@ -59,7 +61,7 @@ export default function VisitDetails() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="outline" onClick={() => navigate('/visits')}>
+        <Button variant="outline" onClick={() => navigate(-1)}>
           <ArrowLeft size={20} />
         </Button>
         <div className="flex-1">

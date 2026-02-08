@@ -106,13 +106,27 @@ export default function AddPatientModal({ isOpen, onClose, onSuccess }) {
             error={errors.nationalId}
             required
           />
-          <Input
-            label={t('patients.bloodType')}
-            name="bloodType"
-            value={formData.bloodType}
-            onChange={handleChange}
-            placeholder="e.g., A+"
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('patients.bloodType')}
+            </label>
+            <select
+              name="bloodType"
+              value={formData.bloodType}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">{t('common.select')}</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Edit } from 'lucide-react';
+import { ArrowLeft, Printer, Edit, MapPinned, Phone  } from 'lucide-react';
+import { FaWhatsapp } from "react-icons/fa6";
+import { LuPhone } from "react-icons/lu";
 import { Card, Button, PermissionGuard } from '../../shared/ui';
 import { prescriptionApi } from '../../services/api';
 import { formatDate, PERMISSIONS } from '../../shared/utils';
@@ -11,12 +13,15 @@ export default function PrescriptionDetails() {
   const { prescriptionId } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const language = useSettingsStore((state) => state.language);
+  // const language = useSettingsStore((state) => state.language);
   const [prescription, setPrescription] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { direction } = useSettingsStore();
+  const isRTL = direction === 'rtl';
 
   useEffect(() => {
     loadPrescription();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prescriptionId]);
 
   const loadPrescription = async () => {
@@ -51,6 +56,12 @@ export default function PrescriptionDetails() {
     );
   }
 
+  const consultationDate =
+    prescription.consultationDate ||
+    prescription.appointmentDate ||
+    prescription.consultation_date ||
+    null;
+
   return (
     <div className="space-y-6">
       {/* Header - Hidden when printing */}
@@ -80,44 +91,72 @@ export default function PrescriptionDetails() {
 
       {/* Prescription Content - This is what gets printed */}
       <div className="bg-white dark:bg-gray-800 p-8 rounded-lg border border-gray-200 dark:border-gray-700 print:border-0 print:shadow-none print:p-0">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-blue-600 dark:text-blue-400">{t('prescriptions.medicalPrescription')}</h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">{t('prescriptions.clinicName')}</p>
-        </div>
+        <div>
+          <div className="grid grid-cols-2 mb-8">
+            <div className='flex flex-col gap-1 items-center justify-center'>
+              <h3 className="font-semibold text-xl ElBannaDr dark:text-gray-100">دكتور</h3>
+              <h1 className='font-bold text-3xl ElBannaName  dark:text-gray-100'>خالد أحمد البنا</h1>
+              <div className='flex font-medium flex-col items-center justify-center ElBannaInfo  dark:text-gray-100'>
+                <p>أستاذ الباطنة العامة - كلية الطب</p>
+                <p>دكتوراه الغدد الصماء والسكر والغدة الدرقية</p>
+                <p>إستشاري الكبد والجهاز الهضمي</p>
+              </div>
+            </div>
 
-        <div className="grid grid-cols-2 gap-6 mb-8">
-          <div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('prescriptions.patientInfo')}</h3>
-            <div className="space-y-1 text-sm">
+            <div className='flex flex-col items-center justify-center'>
+              <h3 className="font-semibold text-xl ElBannaDr dark:text-gray-100">Dr</h3>
+              <h1 className='font-bold text-3xl ElBannaName  dark:text-gray-100'>Khaled El Banna</h1>
+              <div className='flex font-medium flex-col items-center justify-center ElBannaInfo  dark:text-gray-100'>
+                <p>A. Prof Of Internal Medicine</p>
+                <p>Zagazig University</p>
+                <p>Endocrinologist</p>
+              </div>
+            </div>
+          </div>
+          {isRTL ? (          
+            <div className={`flex items-center justify-evenly border-y border-gray-900`}>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
+                {formatDate(prescription.prescriptionDate, 'PPp')}
+              </p>
+              {consultationDate && (
+                <div className="text-gray-900 dark:text-gray-100">
+                  <span className="ElBannaName dark:text-gray-400">{t('prescriptions.consultationDate')}:</span>{' '}
+                  {formatDate(consultationDate, 'PP')}
+                </div>
+              )}
               <div className="text-gray-900 dark:text-gray-100">
-                <span className="text-gray-500 dark:text-gray-400">{t('prescriptions.name')}:</span>{' '}
+                <span className="ElBannaName dark:text-gray-400">{t('prescriptions.age')}:</span>{' '}
+                {prescription.patient.age}
+              </div>
+              <div className="text-gray-900 dark:text-gray-100">
+                <span className="ElBannaName dark:text-gray-400">{t('prescriptions.name')}:</span>{' '}
+                {prescription.patient.firstName} {prescription.patient.lastName}
+              </div>
+            </div>
+            ) : (
+            <div className={`flex items-center justify-evenly border-y border-gray-900`}>
+              <div className="text-gray-900 dark:text-gray-100">
+                <span className="ElBannaName dark:text-gray-400">{t('prescriptions.name')}:</span>{' '}
                 {prescription.patient.firstName} {prescription.patient.lastName}
               </div>
               <div className="text-gray-900 dark:text-gray-100">
-                <span className="text-gray-500 dark:text-gray-400">{t('prescriptions.nationalId')}:</span>{' '}
-                {prescription.patient.nationalId}
+                <span className="ElBannaName dark:text-gray-400">{t('prescriptions.age')}:</span>{' '}
+                {prescription.patient.age}
               </div>
-              <div className="text-gray-900 dark:text-gray-100">
-                <span className="text-gray-500 dark:text-gray-400">{t('prescriptions.phone')}:</span> {prescription.patient.phone}
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('prescriptions.doctorInfo')}</h3>
-            <div className="space-y-1 text-sm">
-              <div className="text-gray-900 dark:text-gray-100">
-                <span className="text-gray-500 dark:text-gray-400">{t('prescriptions.doctor')}:</span> {prescription.doctorName}
-              </div>
-              <div className="text-gray-900 dark:text-gray-100">
-                <span className="text-gray-500 dark:text-gray-400">{t('prescriptions.date')}:</span>{' '}
+              {consultationDate && (
+                <div className="text-gray-900 dark:text-gray-100">
+                  <span className="ElBannaName dark:text-gray-400">{t('prescriptions.consultationDate')}:</span>{' '}
+                  {formatDate(consultationDate, 'PP')}
+                </div>
+              )}
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
                 {formatDate(prescription.prescriptionDate, 'PPp')}
-              </div>
+              </p>
             </div>
-          </div>
+          )}
         </div>
 
-        <div className="mb-8">
+        <div className="my-8">
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('prescriptions.medications')}</h3>
           <div className="space-y-4">
             {prescription.medications.map((med, index) => (
@@ -150,11 +189,27 @@ export default function PrescriptionDetails() {
           </div>
         )}
 
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-8">
-          <div className={language === 'ar' ? 'text-left' : 'text-right'}>
-            <div className="text-sm text-gray-500 dark:text-gray-400">{t('prescriptions.doctorSignature')}</div>
-            <div className={`mt-8 border-t border-gray-400 dark:border-gray-600 w-48 ${language === 'ar' ? 'mr-auto' : 'ml-auto'}`}></div>
+        {consultationDate && (
+          <div className="mb-6">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('prescriptions.consultationDate')}</h3>
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              {formatDate(consultationDate, 'PP')}
+            </p>
           </div>
+        )}
+
+        <div className="flex flex-col items-center justify-center ElBannaFooter border-y border-gray-900 dark:border-gray-700 px-6 py-4 mt-8">
+          <div className='flex items-center justify-center gap-4 mb-1'>
+            <div className='flex flex-col items-start justify-center'>
+              <p className='flex items-center justify-center gap-1'>2867999<FaWhatsapp className='ElBnnaIcon text-2xl' />01040705096</p>
+              <p className='flex items-center justify-center gap-1'><LuPhone className='ElBnnaIcon text-2xl' />01093995093</p>
+            </div>
+            <div className='flex flex-col items-start justify-center'>
+              <p className='flex items-center justify-center gap-1'>بلبيس.شارع أبو بكر الصديق.أمام مطعم المنصور بجوار صيدلية القادسية<MapPinned  className='ElBnnaIcon text-2xl' /></p>
+              <p className='flex items-center justify-center gap-1'>العاشر من رمضان.الأردنية.سيتي سنتر.برج  .أعلى مركز براعم<MapPinned  className='ElBnnaIcon text-2xl' /></p>
+            </div>
+          </div>
+          <span className='ElBnnaIcon dark:text-white'>الكشف والإعادة بحجز مسبق</span>
         </div>
       </div>
     </div>

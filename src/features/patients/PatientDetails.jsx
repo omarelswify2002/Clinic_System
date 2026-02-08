@@ -9,6 +9,9 @@ import { useSettingsStore } from '../../app/settingsStore';
 import AddToQueueModal from '../queue/AddToQueueModal';
 
 const mapStatusKey = (status) => (status === 'in_progress' ? 'inProgress' : status);
+const getVisitTypeLabel = (visitType, t) => (
+  visitType === 'consultation' ? t('visits.consultation') : t('visits.checkup')
+);
 
 export default function PatientDetails() {
   const { nationalId } = useParams();
@@ -32,6 +35,8 @@ export default function PatientDetails() {
     try {
       setLoading(true);
       const patientData = await patientApi.getPatientByNationalId(nationalId);
+      console.log('patientDataaaa',patientData);
+      
       setPatient(patientData);
 
       // Load visits using visitApi - use patient.id not nationalId
@@ -81,6 +86,24 @@ export default function PatientDetails() {
     setShowAddModal(false);
     loadQueue();
     navigate('/queue');
+  };
+
+  const prescriptionByVisitId = prescriptions.reduce((acc, presc) => {
+    if (presc?.visitId) {
+      acc[String(presc.visitId)] = presc;
+    }
+    return acc;
+  }, {});
+
+  const resolveVisitType = (visit) => {
+    if (visit.visitType) {
+      return visit.visitType;
+    }
+    const related = prescriptionByVisitId[String(visit.id)];
+    if (related?.consultationDate) {
+      return 'consultation';
+    }
+    return 'visit';
   };
 
   return (
@@ -152,6 +175,23 @@ export default function PatientDetails() {
                   <div className={isRTL ? 'text-right' : ''}>
                     <div className="text-sm text-gray-500 dark:text-gray-200">{t('patients.nationalId')}</div>
                     <div className="font-medium text-black dark:text-white">{patient.nationalId}</div>
+                  </div>
+                </>)}
+              </div>
+
+              <div className={`flex items-center gap-3 ${isRTL ? 'justify-end' : ''}`}>
+                {isRTL ? (
+                  <>
+                  <div className={isRTL ? 'text-right' : ''}>
+                    <div className="text-sm text-gray-500 dark:text-gray-200">{t('patients.age')}</div>
+                    <div className="font-medium text-black dark:text-white">{patient.age}</div>
+                  </div>
+                  <User size={18} className="text-gray-400 dark:text-gray-300" />
+                </>) : (<>
+                  <User size={18} className="text-gray-400 dark:text-gray-300" />
+                  <div className={isRTL ? 'text-right' : ''}>
+                    <div className="text-sm text-gray-500 dark:text-gray-200">{t('patients.age')}</div>
+                    <div className="font-medium text-black dark:text-white">{patient.age}</div>
                   </div>
                 </>)}
               </div>
@@ -356,6 +396,12 @@ export default function PatientDetails() {
                                 <span className="font-medium">{t('patients.notes')}:</span> {visit.notes}
                               </div>
                             )}
+                            {visit.status === 'completed' && (
+                              <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                                <span className="font-medium">{t('visits.visitType')}:</span>{' '}
+                                {getVisitTypeLabel(resolveVisitType(visit), t)}
+                              </div>
+                            )}
                           </div>
                         </>
                       ) : (
@@ -374,6 +420,12 @@ export default function PatientDetails() {
                             {visit.notes && (
                               <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
                                 <span className="font-medium">{t('patients.notes')}:</span> {visit.notes}
+                              </div>
+                            )}
+                            {visit.status === 'completed' && (
+                              <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                                <span className="font-medium">{t('visits.visitType')}:</span>{' '}
+                                {getVisitTypeLabel(resolveVisitType(visit), t)}
                               </div>
                             )}
                           </div>

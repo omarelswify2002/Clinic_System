@@ -99,16 +99,10 @@ body {
   /* Reset body for print */
   body {
     background: white !important;
-    color: black !important;
     margin: 0;
     padding: 0;
-  }
-
-  /* Remove all dark mode styles */
-  .dark body,
-  .dark * {
-    background-color: white !important;
-    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   /* Hide UI elements */
@@ -131,25 +125,6 @@ body {
     box-shadow: none !important;
     border-radius: 0 !important;
     padding: 0 !important;
-  }
-
-  /* Text colors for print */
-  h1, h2, h3, h4, h5, h6 {
-    color: #1f2937 !important;
-  }
-
-  p, span, div {
-    color: #374151 !important;
-  }
-
-  .text-gray-500,
-  .dark\:text-gray-400 {
-    color: #6b7280 !important;
-  }
-
-  .text-blue-600,
-  .dark\:text-blue-400 {
-    color: #2563eb !important;
   }
 
   /* Borders for print */
@@ -180,4 +155,26 @@ body {
   .space-y-6 {
     gap: 1rem !important;
   }
+}
+
+.ElBannaDr{
+  color:#3c6596;
+}
+
+.ElBannaName{
+  color:#736b90;
+}
+
+.ElBannaInfo{
+  color:#8f4c5b;
+}
+
+.ElBannaFooter{
+  background: #7161a3;
+  color: white;
+}
+
+.ElBnnaIcon{
+  color:#f3c3d9;
+  font-weight: bold;
 }

@@ -21,6 +21,7 @@ export const adaptPatient = (backendPatient) => {
     id: String(backendPatient.id),
     firstName,
     lastName,
+    age: backendPatient.age,
     nationalId: backendPatient.nationalID || '',
     dateOfBirth: backendPatient.age
       ? new Date(new Date().getFullYear() - backendPatient.age, 0, 1).toISOString()
@@ -109,6 +110,7 @@ export const adaptVisit = (backendVisit) => {
     notes: backendVisit.notes || '',
     status: statusMap[backendVisit.status] || 'scheduled',
     visitDate: backendVisit.visitDate,
+    visitType: backendVisit.visitType || backendVisit.type || 'visit',
     prescriptions: backendVisit.prescriptions?.map(adaptPrescription) || [],
   };
 };
@@ -127,7 +129,7 @@ export const adaptVisitToBackend = (frontendVisit) => {
     'cancelled': 'cancelled',
   };
 
-  return {
+  const backendData = {
     patientId: parseInt(frontendVisit.patientId),
     doctorUsername: frontendVisit.doctorName,
     chiefComplaint: frontendVisit.chiefComplaint,
@@ -135,6 +137,10 @@ export const adaptVisitToBackend = (frontendVisit) => {
     notes: frontendVisit.notes,
     status: statusMap[frontendVisit.status] || 'pending',
   };
+  if (frontendVisit.visitType) {
+    backendData.visitType = frontendVisit.visitType;
+  }
+  return backendData;
 };
 
 /**
@@ -186,6 +192,7 @@ export const adaptPrescription = (backendPrescription) => {
     medicationCount: backendPrescription.medicationCount || backendPrescription.medications?.length || 0,
     additionalNotes: backendPrescription.additionalNotes || '',
     prescriptionDate: backendPrescription.date || backendPrescription.prescribedAt,
+    consultationDate: backendPrescription.consultationDate || backendPrescription.appointmentDate || null,
   };
 };
 
@@ -203,6 +210,9 @@ export const adaptPrescriptionToBackend = (frontendPrescription) => {
       instructions: med.instructions || null,
     })) || [],
   };
+  if (frontendPrescription.consultationDate) {
+    backendData.consultationDate = frontendPrescription.consultationDate;
+  }
 
   // Only include visitId if it exists (for create, not update)
   if (frontendPrescription.visitId) {

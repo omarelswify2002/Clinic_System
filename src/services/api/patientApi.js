@@ -32,6 +32,7 @@ const realPatientApi = {
     // Backend doesn't have this endpoint, search by nationalID in all patients
     // Get all patients without pagination
     const response = await httpClient.get('/patients?limit=999999');
+    console.log('getPatientByNationalId >>> response',response.data);
     const patients = response.data || response;
     const patient = patients.find(p => p.nationalID === nationalId);
     return patient ? adaptPatient(patient) : null;

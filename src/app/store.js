@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { authApi } from '../services/api';
 import { httpClient } from '../services/http';
 import { SYNC_STATUS } from '../shared/constants';
@@ -64,7 +64,8 @@ export const useAuthStore = create(
 
     }),
     {
-      name: 'auth-storage', // localStorage key
+      name: 'auth-storage', // sessionStorage key
+      storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
         user: state.user,
         token: state.token,

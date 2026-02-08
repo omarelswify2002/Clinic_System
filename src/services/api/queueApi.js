@@ -3,6 +3,41 @@ import { mockQueueService } from '../mock';
 import { httpClient } from '../http';
 import { adaptQueue, adaptQueueToBackend } from './adapters';
 
+const computeQueueStats = (queueList) => {
+  const total = queueList.length;
+  const waiting = queueList.filter(q => q.status === 'waiting').length;
+  const inProgress = queueList.filter(q => q.status === 'in_progress').length;
+  const completed = queueList.filter(q => q.status === 'completed').length;
+  const consultationTotal = queueList.filter(q => q.priority === 'consultation').length;
+  const visitTotal = total - consultationTotal;
+  const completedConsultations = queueList.filter(
+    q => q.status === 'completed' && q.priority === 'consultation'
+  ).length;
+  const completedVisits = queueList.filter(
+    q => q.status === 'completed' && q.priority !== 'consultation'
+  ).length;
+
+  return {
+    total,
+    waiting,
+    inProgress,
+    completed,
+    consultationTotal,
+    visitTotal,
+    completedConsultations,
+    completedVisits,
+  };
+};
+
+const sortQueueForDisplay = (queueList) => {
+  const priorityRank = (item) => (item.isUrgent || item.priority === 'urgent' ? 0 : 1);
+  return [...queueList].sort((a, b) => {
+    const rankDiff = priorityRank(a) - priorityRank(b);
+    if (rankDiff !== 0) return rankDiff;
+    return (a.queueNumber || 0) - (b.queueNumber || 0);
+  });
+};
+
 const realQueueApi = {
   getQueue: async () => {
     const queues = await httpClient.get('/queues');
@@ -16,7 +51,8 @@ const realQueueApi = {
     const filtered = queues.filter(q =>
       new Date(q.queuedAt).toDateString() === today
     );
-    return filtered.map(adaptQueue);
+    const adapted = filtered.map(adaptQueue);
+    return sortQueueForDisplay(adapted);
   },
 
   addToQueue: async (patientId, patient, notes, priority) => {
@@ -58,9 +94,9 @@ const realQueueApi = {
   },
 
   getQueueStats: async () => {
-    // Backend now has a stats endpoint
-    const stats = await httpClient.get('/queues/stats');
-    return stats;
+    // Compute stats from today's queue to include consultation vs visit counts
+    const todayQueue = await realQueueApi.getTodayQueue();
+    return computeQueueStats(todayQueue);
   },
 };
 

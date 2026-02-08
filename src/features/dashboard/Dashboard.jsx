@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Users, ClipboardList, FileText, TrendingUp } from 'lucide-react';
 import { Card } from '../../shared/ui';
-import { patientApi, queueApi, visitApi } from '../../services/api';
+import { patientApi, queueApi } from '../../services/api';
 import StatCard from './StatCard';
 import QueuePreview from './QueuePreview';
 import { useTranslation } from '../../shared/i18n';
@@ -16,8 +16,7 @@ export default function Dashboard() {
   const isRTL = direction === 'rtl';
   const [stats, setStats] = useState({
     patients: { total: 0, newToday: 0 },
-    queue: { total: 0, waiting: 0 },
-    visits: { total: 0 },
+    queue: { total: 0, waiting: 0, consultationTotal: 0, visitTotal: 0, completedConsultations: 0, completedVisits: 0 },
   });
   const [loading, setLoading] = useState(true);
 
@@ -28,16 +27,14 @@ export default function Dashboard() {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const [patientStats, queueStats, todayVisits] = await Promise.all([
+      const [patientStats, queueStats] = await Promise.all([
         patientApi.getPatientStats(),
         queueApi.getQueueStats(),
-        visitApi.getTodayVisits(),
       ]);
 
       setStats({
         patients: patientStats,
         queue: queueStats,
-        visits: { total: todayVisits.length },
       });
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
@@ -62,16 +59,16 @@ export default function Dashboard() {
       color: 'yellow',
     },
     {
-      title: t('dashboard.visitsToday'),
-      value: stats.visits.total,
-      subtitle: t('dashboard.completedInProgress'),
+      title: t('dashboard.consultationsToday'),
+      value: stats.queue.consultationTotal,
+      subtitle: `${t('dashboard.completed')}: ${stats.queue.completedConsultations}`,
       icon: FileText,
       color: 'green',
     },
     {
-      title: t('dashboard.completed'),
-      value: stats.queue.completed,
-      subtitle: t('dashboard.patientsServed'),
+      title: t('dashboard.visitsToday'),
+      value: stats.queue.visitTotal,
+      subtitle: `${t('dashboard.completed')}: ${stats.queue.completedVisits}`,
       icon: TrendingUp,
       color: 'purple',
     },

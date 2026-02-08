@@ -59,6 +59,8 @@ const realPrescriptionApi = {
   createPrescription: async (prescriptionData) => {
     const backendData = adaptPrescriptionToBackend(prescriptionData);
     const resp = await httpClient.post('/prescriptions', backendData);
+    console.log('createPrescirption >> resp',resp);
+    
     const presc = resp?.data || resp;
     return adaptPrescription(presc);
   },
@@ -66,6 +68,8 @@ const realPrescriptionApi = {
   updatePrescription: async (id, prescriptionData) => {
     const backendData = adaptPrescriptionToBackend(prescriptionData);
     const resp = await httpClient.put(`/prescriptions/${id}`, backendData);
+    console.log('updatePrescription >> resp',resp);
+
     const presc = resp?.data || resp;
     return adaptPrescription(presc);
   },

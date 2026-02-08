@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, Calendar } from 'lucide-react';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { Card, Button, Input } from '../../shared/ui';
 import { prescriptionApi } from '../../services/api';
@@ -17,21 +18,27 @@ export default function EditPrescription() {
   const [prescription, setPrescription] = useState(null);
   const [medications, setMedications] = useState([]);
   const [notes, setNotes] = useState('');
+  const [consultationDate, setConsultationDate] = useState('');
   const { t } = useTranslation();
   const { direction } = useSettingsStore();
   const isRTL = direction === 'rtl';
 
   useEffect(() => {
     loadPrescription();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prescriptionId]);
 
   const loadPrescription = async () => {
     try {
       setLoading(true);
       const data = await prescriptionApi.getPrescriptionById(prescriptionId);
+      console.log('data',data);
       setPrescription(data);
       setMedications(data.medications || []);
       setNotes(data.additionalNotes || ''); // Changed from data.notes to data.additionalNotes
+      setConsultationDate(
+        data.consultationDate ? new Date(data.consultationDate).toISOString().split('T')[0] : ''
+      );
     } catch (error) {
       console.error('Failed to load prescription:', error);
     } finally {
@@ -80,6 +87,7 @@ export default function EditPrescription() {
       await prescriptionApi.updatePrescription(prescriptionId, {
         medications: validMedications,
         additionalNotes: notes, // Changed from 'notes' to 'additionalNotes'
+        consultationDate: consultationDate || null,
       });
 
       navigate(`/prescriptions/${prescriptionId}`);
@@ -147,6 +155,18 @@ export default function EditPrescription() {
             <span className="text-gray-500 dark:text-gray-300">{t('prescriptions.doctor')}:</span>{' '}
             <span className="font-medium text-gray-900 dark:text-white">{prescription.doctorName}</span>
           </div>
+        </div>
+      </Card>
+
+      <Card title={t('prescriptions.consultationDate')}>
+        <div className="max-w-xs">
+          <Input
+            type="date"
+            icon={Calendar}
+            value={consultationDate}
+            onChange={(e) => setConsultationDate(e.target.value)}
+            placeholder="YYYY-MM-DD"
+          />
         </div>
       </Card>
 

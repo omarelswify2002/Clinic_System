@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Calendar } from 'lucide-react';
 import { Card, Table, Pagination, Input, DatePicker, Button } from '../../shared/ui';
-import { prescriptionApi } from '../../services/api';
+import { prescriptionApi, visitApi } from '../../services/api';
 import { formatDate } from '../../shared/utils';
 import { matchesQuery } from '../../shared/utils/search';
 import { useTranslation } from '../../shared/i18n';
@@ -45,6 +45,12 @@ export default function PrescriptionList() {
 
       const response = await prescriptionApi.getAllPrescriptions(page, limit);
       let data = response.data;
+      const allVisits = await visitApi.getAllVisits(1, 999999);
+      const visitList = Array.isArray(allVisits) ? allVisits : (allVisits.data || []);
+      const completedVisitIds = new Set(
+        visitList.filter((v) => v.status === 'completed').map((v) => String(v.id))
+      );
+    
 
       // Apply filters if searching or filtering
       if (isSearching) {
@@ -69,6 +75,25 @@ export default function PrescriptionList() {
           );
         }
       }
+
+      const missingPatientForCompleted = data.filter((p) =>
+        completedVisitIds.has(String(p.visitId)) &&
+        (!p?.patient?.firstName && !p?.patient?.lastName) &&
+        p?.id
+      );
+      if (missingPatientForCompleted.length > 0) {
+        const details = await Promise.all(
+          missingPatientForCompleted.map((p) =>
+            prescriptionApi.getPrescriptionById(p.id).catch(() => null)
+          )
+        );
+        const detailMap = details.reduce((acc, detail) => {
+          if (detail?.id) acc[detail.id] = detail;
+          return acc;
+        }, {});
+        data = data.map((p) => detailMap[p.id] || p);
+      }
+
       setPrescriptions(data);
       setPagination(response.pagination);
     } catch (error) {
@@ -92,7 +117,7 @@ export default function PrescriptionList() {
       key: 'patient',
       label: t('prescriptions.patient'),
       render: (prescription) =>
-        `${prescription.patient.firstName} ${prescription.patient.lastName}`,
+        `${prescription.patient?.firstName || ''} ${prescription.patient?.lastName || ''}`.trim(),
     },
     {
       key: 'doctor',

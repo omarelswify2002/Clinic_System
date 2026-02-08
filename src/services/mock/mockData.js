@@ -14,7 +14,7 @@ export const mockUsers = [
     username: 'doctor',
     password: 'doctor123',
     role: 'doctor',
-    name: 'Dr. Ahmed Hassan',
+    name: 'Dr. Khaled El Banna',
   },
   {
     id: '3',
@@ -110,9 +110,10 @@ export const mockVisits = [
     patientId: '1',
     patient: mockPatients[0],
     doctorId: '2',
-    doctorName: 'Dr. Ahmed Hassan',
+    doctorName: 'Dr. Khaled El Banna',
     visitDate: '2024-12-10T10:30:00Z',
     status: VISIT_STATUS.COMPLETED,
+    visitType: 'consultation',
     chiefComplaint: 'Headache and fever',
     diagnosis: 'Viral infection',
     notes: 'Patient presented with headache and mild fever. Prescribed rest and fluids.',
@@ -130,9 +131,10 @@ export const mockVisits = [
     patientId: '2',
     patient: mockPatients[1],
     doctorId: '2',
-    doctorName: 'Dr. Ahmed Hassan',
+    doctorName: 'Dr. Khaled El Banna',
     visitDate: '2024-12-12T14:00:00Z',
     status: VISIT_STATUS.COMPLETED,
+    visitType: 'visit',
     chiefComplaint: 'Diabetes follow-up',
     diagnosis: 'Type 2 Diabetes - controlled',
     notes: 'Blood sugar levels stable. Continue current medication.',
@@ -155,8 +157,9 @@ export const mockPrescriptions = [
     patientId: '1',
     patient: mockPatients[0],
     doctorId: '2',
-    doctorName: 'Dr. Ahmed Hassan',
+    doctorName: 'Dr. Khaled El Banna',
     prescriptionDate: '2024-12-10T10:30:00Z',
+    consultationDate: '2024-12-20',
     medications: [
       {
         id: '1',
@@ -175,7 +178,7 @@ export const mockPrescriptions = [
     patientId: '2',
     patient: mockPatients[1],
     doctorId: '2',
-    doctorName: 'Dr. Ahmed Hassan',
+    doctorName: 'Dr. Khaled El Banna',
     prescriptionDate: '2024-12-12T14:00:00Z',
     medications: [
       {
@@ -190,4 +193,3 @@ export const mockPrescriptions = [
     notes: 'Continue monitoring blood sugar levels',
   },
 ];
-

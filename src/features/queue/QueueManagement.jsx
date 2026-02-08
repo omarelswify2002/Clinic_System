@@ -18,7 +18,16 @@ const statusVariants = {
 
 export default function QueueManagement() {
   const [queue, setQueue] = useState([]);
-  const [stats, setStats] = useState({ total: 0, waiting: 0, inProgress: 0, completed: 0 });
+  const [stats, setStats] = useState({
+    total: 0,
+    waiting: 0,
+    inProgress: 0,
+    completed: 0,
+    consultationTotal: 0,
+    visitTotal: 0,
+    completedConsultations: 0,
+    completedVisits: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const { t } = useTranslation();
@@ -123,7 +132,7 @@ export default function QueueManagement() {
           </div>
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700">
           <div className="text-center">
             <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{stats.waiting}</div>
@@ -136,10 +145,24 @@ export default function QueueManagement() {
             <div className="text-sm text-blue-700 dark:text-blue-300 mt-1">{t('queue.inProgress')}</div>
           </div>
         </Card>
+        <Card className="bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700">
+          <div className="text-center">
+            <div className="text-3xl font-bold text-amber-600 dark:text-amber-400">{stats.consultationTotal}</div>
+            <div className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+              {t('queue.consultation')}
+            </div>
+            <div className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+              {t('queue.completed')}: {stats.completedConsultations}
+            </div>
+          </div>
+        </Card>
         <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700">
           <div className="text-center">
-            <div className="text-3xl font-bold text-green-600 dark:text-green-400">{stats.completed}</div>
-            <div className="text-sm text-green-700 dark:text-green-300 mt-1">{t('queue.completed')}</div>
+            <div className="text-3xl font-bold text-green-600 dark:text-green-400">{stats.visitTotal}</div>
+            <div className="text-sm text-green-700 dark:text-green-300 mt-1">{t('queue.visits')}</div>
+            <div className="text-xs text-green-700 dark:text-green-300 mt-1">
+              {t('queue.completed')}: {stats.completedVisits}
+            </div>
           </div>
         </Card>
       </div>
@@ -161,6 +184,8 @@ export default function QueueManagement() {
                 className={`flex items-center justify-between p-4 border rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 ${
                   item.isUrgent || item.priority === 'urgent'
                     ? 'bg-red-50 dark:bg-red-900/20 border-red-500 dark:border-red-400 border-l-4'
+                    : item.priority === 'consultation' 
+                    ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700 border-l-4'
                     : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
                 }`}
               >
@@ -200,28 +225,52 @@ export default function QueueManagement() {
                       <Badge variant={statusVariants[item.status]}>
                         {statusLabels[item.status]}
                       </Badge>
-                      <div className="flex-1 text-right">
-                        <div className={`font-medium ${
-                          item.isUrgent || item.priority === 'urgent'
-                            ? 'text-red-900 dark:text-red-100'
-                            : 'text-gray-900 dark:text-gray-100'
-                        }`}>
-                          {item.patient.firstName} {item.patient.lastName}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          ID: {item.patient.nationalId} • {formatRelativeTime(item.arrivalTime)}
-                        </div>
-                        {item.notes && (
-                          <div className={`text-sm mt-1 ${
+                      <div className="flex-1 gap-1 text-right">
+                        <div>
+                          <div className={`font-medium ${
                             item.isUrgent || item.priority === 'urgent'
-                              ? 'text-red-700 dark:text-red-300 font-medium'
-                              : 'text-gray-600 dark:text-gray-300'
-                          }`}>{item.notes}</div>
-                        )}
+                              ? 'text-red-900 dark:text-red-100'
+                              : item.priority === 'consultation' 
+                              ? 'text-yellow-900 dark:text-yellow-100'
+                              : 'text-gray-900 dark:text-gray-100'
+                          }`}>
+                            {item.patient.firstName} {item.patient.lastName}
+                          </div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            ID: {item.patient.nationalId} • {formatRelativeTime(item.arrivalTime)}
+                          </div>
+                          {item.notes && (
+                            <div className={`text-sm mt-1 ${
+                              item.isUrgent || item.priority === 'urgent'
+                                ? 'text-red-700 dark:text-red-300 font-medium'
+                                : item.priority === 'consultation' 
+                                ? 'text-yellow-700 dark:text-yellow-300 font-medium'
+                                : 'text-gray-600 dark:text-gray-300'
+                            }`}>{item.notes}</div>
+                          )}
+                        </div>
+
+                        <div className='w-28 mt-1'>
+                          {item.priority === 'urgent' ? (
+                            <div className="bg-red-500 text-sm px-2 py-1 rounded-lg">
+                              <p className="text-white font-bold text-center">
+                                {t('queue.urgent')}
+                              </p>
+                            </div>
+                          ) : item.priority === 'consultation' ? (
+                            <div className="bg-yellow-500 text-sm px-2 py-1 rounded-lg">
+                              <p className="text-white font-bold text-center">
+                                {t('queue.consultation')}
+                              </p>
+                            </div>
+                          ):''}
+                        </div>
                       </div>
                       <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
                         item.isUrgent || item.priority === 'urgent'
                           ? 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'
+                          : item.priority === 'consultation' 
+                          ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-600 dark:text-yellow-400'
                           : 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400'
                       }`}>
                         {item.queueNumber}
@@ -235,28 +284,51 @@ export default function QueueManagement() {
                       <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
                         item.isUrgent || item.priority === 'urgent'
                           ? 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'
+                          : item.priority === 'consultation' 
+                          ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-600 dark:text-yellow-400'
                           : 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400'
                       }`}>
                         {item.queueNumber}
                       </div>
-                      <div className="flex-1">
-                        <div className={`font-medium ${
-                          item.isUrgent || item.priority === 'urgent'
-                            ? 'text-red-900 dark:text-red-100'
-                            : 'text-gray-900 dark:text-gray-100'
-                        }`}>
-                          {item.patient.firstName} {item.patient.lastName}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          ID: {item.patient.nationalId} • {formatRelativeTime(item.arrivalTime)}
-                        </div>
-                        {item.notes && (
-                          <div className={`text-sm mt-1 ${
+                      <div className="flex-1 gap-1 text-left">
+                        <div>
+                          <div className={`font-medium ${
                             item.isUrgent || item.priority === 'urgent'
-                              ? 'text-red-700 dark:text-red-300 font-medium'
-                              : 'text-gray-600 dark:text-gray-300'
-                          }`}>{item.notes}</div>
-                        )}
+                              ? 'text-red-900 dark:text-red-100'
+                              : item.priority === 'consultation' 
+                              ? 'text-yellow-900 dark:text-yellow-100'
+                              : 'text-gray-900 dark:text-gray-100'
+                          }`}>
+                            {item.patient.firstName} {item.patient.lastName}
+                          </div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            ID: {item.patient.nationalId} • {formatRelativeTime(item.arrivalTime)}
+                          </div>
+                          {item.notes && (
+                            <div className={`text-sm mt-1 ${
+                              item.isUrgent || item.priority === 'urgent'
+                                ? 'text-red-700 dark:text-red-300 font-medium'
+                                : item.priority === 'consultation' 
+                                ? 'text-yellow-700 dark:text-yellow-300 font-medium'
+                                : 'text-gray-600 dark:text-gray-300'
+                            }`}>{item.notes}</div>
+                          )}
+                        </div>
+                        <div className='w-28 mt-1'>
+                          {item.priority === 'urgent' ? (
+                            <div className="bg-red-500 text-sm px-2 py-1 rounded-lg">
+                              <p className="text-white font-bold text-center">
+                                {t('queue.urgent')}
+                              </p>
+                            </div>
+                          ) : item.priority === 'consultation' ? (
+                            <div className="bg-yellow-500 text-sm px-2 py-1 rounded-lg">
+                              <p className="text-white font-bold text-center">
+                                {t('queue.consultation')}
+                              </p>
+                            </div>
+                          ):''}
+                        </div>
                       </div>
                       <Badge variant={statusVariants[item.status]}>
                         {statusLabels[item.status]}
