@@ -77,14 +77,18 @@ export default function VisitDetails() {
         <Card title={t('visits.patientInfo')}>
           <div className="space-y-3">
             <div>
+              <div className="text-sm text-gray-500">{t('visits.id')}</div>
+              <div className="font-medium">{visit.patient.id}</div>
+            </div>
+            <div>
               <div className="text-sm text-gray-500">{t('visits.patient')}</div>
               <div className="font-medium">
                 {visit.patient.firstName} {visit.patient.lastName}
               </div>
             </div>
             <div>
-              <div className="text-sm text-gray-500">{t('patients.nationalId')}</div>
-              <div className="font-medium">{visit.patient.nationalId}</div>
+              <div className="text-sm text-gray-500">{t('patients.age')}</div>
+              <div className="font-medium">{visit.patient.age}</div>
             </div>
             <div>
               <div className="text-sm text-gray-500">{t('patients.phone')}</div>
@@ -115,10 +119,10 @@ export default function VisitDetails() {
             </div>
           </Card>
 
-          {visit.vitalSigns && (
+          {/* {visit.vitalSigns && (
             <Card title={t('visits.vitalSigns')}>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {visit.vitalSigns.temperature && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4"> */}
+                {/* {visit.vitalSigns.temperature && (
                   <div>
                     <div className="text-sm text-gray-500">{t('visits.temperature')}</div>
                     <div className="font-medium">{visit.vitalSigns.temperature} {t('visits.temperatureUnit')}</div>
@@ -147,10 +151,11 @@ export default function VisitDetails() {
                     <div className="text-sm text-gray-500">{t('visits.height')}</div>
                     <div className="font-medium">{visit.vitalSigns.height} {t('visits.heightUnit')}</div>
                   </div>
-                )}
-              </div>
+                )} */}
+              {/* </div>
             </Card>
-          )}
+          )} */}
+          
         </div>
       </div>
     </div>

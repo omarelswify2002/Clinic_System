@@ -129,6 +129,7 @@ export const en = {
     female: 'Female',
     years: 'years',
     noPatientsFound: 'No patients found',
+    actions: 'Actions',
   },
 
   // Queue
@@ -169,6 +170,7 @@ export const en = {
 
   // Visits
   visits: {
+    id: 'ID',
     title: 'Visits',
     visitList: 'Visit List',
     visitDetails: 'Visit Details',

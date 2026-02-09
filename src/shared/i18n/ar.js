@@ -130,6 +130,7 @@ export const ar = {
     female: 'أنثى',
     years: 'سنة',
     noPatientsFound: 'لم يتم العثور على مرضى',
+    actions: 'الإجراءات',
   },
 
   // Queue
@@ -170,6 +171,7 @@ export const ar = {
 
   // Visits
   visits: {
+    id: 'الرقم التسلسلي',
     title: 'الزيارات',
     visitList: 'قائمة الزيارات',
     visitDetails: 'تفاصيل الزيارة',

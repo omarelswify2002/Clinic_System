@@ -6,6 +6,7 @@ import { patientApi, visitApi } from '../../services/api';
 import { formatDate, PERMISSIONS } from '../../shared/utils';
 import { matchesQuery } from '../../shared/utils/search';
 import AddPatientModal from './AddPatientModal';
+import EditPatientModal from './EditPatientModal';
 import { useTranslation } from '../../shared/i18n';
 import { useSettingsStore } from '../../app/settingsStore';
 
@@ -16,6 +17,8 @@ export default function PatientList() {
   const [selectedDate, setSelectedDate] = useState(''); // Date filter
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { direction } = useSettingsStore();
@@ -124,6 +127,21 @@ export default function PatientList() {
     loadPatients();
   };
 
+  const handleEditOpen = (patient) => {
+    setSelectedPatient(patient);
+    setShowEditModal(true);
+  };
+
+  const handleEditClose = () => {
+    setShowEditModal(false);
+    setSelectedPatient(null);
+  };
+
+  const handlePatientUpdated = () => {
+    handleEditClose();
+    loadPatients();
+  };
+
   const columns = [
     {
       key: 'id',
@@ -160,6 +178,26 @@ export default function PatientList() {
     {
       key: 'bloodType',
       label: t('patients.bloodType'),
+    },
+    {
+      key: 'actions',
+      label: t('patients.actions'),
+      render: (patient) => (
+        <div className={`${isRTL ? 'text-left' : 'text-right'}`}>
+          <PermissionGuard permission={PERMISSIONS.EDIT_PATIENT}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEditOpen(patient);
+              }}
+            >
+              {t('common.edit')}
+            </Button>
+          </PermissionGuard>
+        </div>
+      ),
     },
   ];
 
@@ -280,6 +318,12 @@ export default function PatientList() {
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSuccess={handlePatientAdded}
+      />
+      <EditPatientModal
+        isOpen={showEditModal}
+        patient={selectedPatient}
+        onClose={handleEditClose}
+        onSuccess={handlePatientUpdated}
       />
     </div>
   );
