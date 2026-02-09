@@ -41,6 +41,7 @@ export default function PatientDetails() {
 
       // Load visits using visitApi - use patient.id not nationalId
       const visitsData = await visitApi.getPatientVisits(patientData.id);
+      console.log('visitsData>>>',visitsData);
       setVisits(visitsData);
 
       // Load prescriptions - use patient.id not nationalId
@@ -103,7 +104,7 @@ export default function PatientDetails() {
     if (related?.consultationDate) {
       return 'consultation';
     }
-    return 'visit';
+    return 'examination';
   };
 
   return (

@@ -110,8 +110,8 @@ export default function PrescriptionList() {
   const columns = [
     {
       key: 'prescriptionDate',
-      label: t('prescriptions.date'),
-      render: (prescription) => formatDate(prescription.prescriptionDate, 'PPp'),
+      label: t('prescriptions.consultationDate'),
+      render: (prescription) => formatDate(prescription.prescriptionDate, 'PP'),
     },
     {
       key: 'patient',

@@ -52,6 +52,7 @@ export default function PatientList() {
       const limit = isSearching ? 999999 : 10;
 
       const response = await patientApi.getAllPatients(page, limit);
+      console.log('patientList response.data',response.data);
       let data = response.data;
 
       // Apply filters if searching

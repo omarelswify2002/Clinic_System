@@ -5,14 +5,14 @@ import { FaWhatsapp } from "react-icons/fa6";
 import { LuPhone } from "react-icons/lu";
 import { Card, Button, PermissionGuard } from '../../shared/ui';
 import { prescriptionApi } from '../../services/api';
-import { formatDate, PERMISSIONS } from '../../shared/utils';
+import { formatDateWithLocale, PERMISSIONS } from '../../shared/utils';
 import { useTranslation } from '../../shared/i18n';
 import { useSettingsStore } from '../../app/settingsStore';
 
 export default function PrescriptionDetails() {
   const { prescriptionId } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   // const language = useSettingsStore((state) => state.language);
   const [prescription, setPrescription] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -62,6 +62,14 @@ export default function PrescriptionDetails() {
     prescription.consultation_date ||
     null;
 
+  const consultationWeekday = consultationDate
+    ? formatDateWithLocale(consultationDate, 'EEEE', language)
+    : '';
+
+  const consultationDateText = consultationDate
+    ? formatDateWithLocale(consultationDate, 'dd MMMM yyyy', language)
+    : '';
+
   return (
     <div className="space-y-6">
       {/* Header - Hidden when printing */}
@@ -72,7 +80,7 @@ export default function PrescriptionDetails() {
         <div className="flex-1">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('prescriptions.prescription')}</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            {formatDate(prescription.prescriptionDate, 'PPp')}
+            {formatDateWithLocale(prescription.prescriptionDate, 'dd MMMM yyyy p', language)}
           </p>
         </div>
         <div className="flex gap-2">
@@ -116,14 +124,14 @@ export default function PrescriptionDetails() {
           {isRTL ? (          
             <div className={`flex items-center justify-evenly border-y border-gray-900`}>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                {formatDate(prescription.prescriptionDate, 'PPp')}
+                {formatDateWithLocale(prescription.prescriptionDate, 'dd MMMM yyyy p', language)}
               </p>
-              {consultationDate && (
+              {/* {consultationDate && (
                 <div className="text-gray-900 dark:text-gray-100">
                   <span className="ElBannaName dark:text-gray-400">{t('prescriptions.consultationDate')}:</span>{' '}
                   {formatDate(consultationDate, 'PP')}
                 </div>
-              )}
+              )} */}
               <div className="text-gray-900 dark:text-gray-100">
                 <span className="ElBannaName dark:text-gray-400">{t('prescriptions.age')}:</span>{' '}
                 {prescription.patient.age}
@@ -143,14 +151,14 @@ export default function PrescriptionDetails() {
                 <span className="ElBannaName dark:text-gray-400">{t('prescriptions.age')}:</span>{' '}
                 {prescription.patient.age}
               </div>
-              {consultationDate && (
+              {/* {consultationDate && (
                 <div className="text-gray-900 dark:text-gray-100">
                   <span className="ElBannaName dark:text-gray-400">{t('prescriptions.consultationDate')}:</span>{' '}
                   {formatDate(consultationDate, 'PP')}
                 </div>
-              )}
+              )} */}
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                {formatDate(prescription.prescriptionDate, 'PPp')}
+                {formatDateWithLocale(prescription.prescriptionDate, 'dd MMMM yyyy p', language)}
               </p>
             </div>
           )}
@@ -193,7 +201,7 @@ export default function PrescriptionDetails() {
           <div className="mb-6">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('prescriptions.consultationDate')}</h3>
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              {formatDate(consultationDate, 'PP')}
+              {consultationWeekday} - {consultationDateText}
             </p>
           </div>
         )}

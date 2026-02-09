@@ -60,7 +60,9 @@ export default function QueueManagement() {
         queueApi.getTodayQueue(),
         queueApi.getQueueStats(),
       ]);
+      console.log('queueData>>', queueData);
       setQueue(queueData);
+      console.log('statsData>>', statsData);
       setStats(statsData);
     } catch (error) {
       console.error('Failed to load queue:', error);
@@ -263,7 +265,13 @@ export default function QueueManagement() {
                                 {t('queue.consultation')}
                               </p>
                             </div>
-                          ):''}
+                          ):(
+                            <div className="bg-blue-500 text-sm px-2 py-1 rounded-lg">
+                              <p className="text-white font-bold text-center">
+                                {t('queue.examination')}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
@@ -327,7 +335,13 @@ export default function QueueManagement() {
                                 {t('queue.consultation')}
                               </p>
                             </div>
-                          ):''}
+                          ):(
+                            <div className="bg-blue-500 text-sm px-2 py-1 rounded-lg">
+                              <p className="text-white font-bold text-center">
+                                {t('queue.examination')}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <Badge variant={statusVariants[item.status]}>

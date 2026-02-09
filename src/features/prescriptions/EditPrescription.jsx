@@ -19,6 +19,7 @@ export default function EditPrescription() {
   const [medications, setMedications] = useState([]);
   const [notes, setNotes] = useState('');
   const [consultationDate, setConsultationDate] = useState('');
+  const [consultationDateEnabled, setConsultationDateEnabled] = useState(false);
   const { t } = useTranslation();
   const { direction } = useSettingsStore();
   const isRTL = direction === 'rtl';
@@ -32,13 +33,14 @@ export default function EditPrescription() {
     try {
       setLoading(true);
       const data = await prescriptionApi.getPrescriptionById(prescriptionId);
-      console.log('data',data);
+      console.log('edit prescription page > data >>>',data);
       setPrescription(data);
       setMedications(data.medications || []);
       setNotes(data.additionalNotes || ''); // Changed from data.notes to data.additionalNotes
       setConsultationDate(
         data.consultationDate ? new Date(data.consultationDate).toISOString().split('T')[0] : ''
       );
+      setConsultationDateEnabled(Boolean(data.consultationDate));
     } catch (error) {
       console.error('Failed to load prescription:', error);
     } finally {
@@ -87,7 +89,7 @@ export default function EditPrescription() {
       await prescriptionApi.updatePrescription(prescriptionId, {
         medications: validMedications,
         additionalNotes: notes, // Changed from 'notes' to 'additionalNotes'
-        consultationDate: consultationDate || null,
+        consultationDate: consultationDateEnabled ? (consultationDate || null) : null,
       });
 
       navigate(`/prescriptions/${prescriptionId}`);
@@ -159,13 +161,28 @@ export default function EditPrescription() {
       </Card>
 
       <Card title={t('prescriptions.consultationDate')}>
-        <div className="max-w-xs">
+        <div className="space-y-3">
+          <label className={`flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 ${isRTL ? 'justify-end' : ''}`}>
+            <input
+              type="checkbox"
+              checked={consultationDateEnabled}
+              onChange={(e) => {
+                const enabled = e.target.checked;
+                setConsultationDateEnabled(enabled);
+                if (!enabled) {
+                  setConsultationDate('');
+                }
+              }}
+            />
+            {t('prescriptions.setConsultationDate')}
+          </label>
           <Input
             type="date"
             icon={Calendar}
             value={consultationDate}
             onChange={(e) => setConsultationDate(e.target.value)}
             placeholder="YYYY-MM-DD"
+            disabled={!consultationDateEnabled}
           />
         </div>
       </Card>

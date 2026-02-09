@@ -1,7 +1,7 @@
 import { API_CONFIG } from './config';
 import { mockQueueService } from '../mock';
 import { httpClient } from '../http';
-import { adaptQueue, adaptQueueToBackend } from './adapters';
+import { adaptQueue } from './adapters';
 
 const computeQueueStats = (queueList) => {
   const total = queueList.length;
@@ -61,7 +61,8 @@ const realQueueApi = {
     const queueData = {
       patientId: parseInt(patientId),
       reason: notes || '',
-      priority: priority || 'normal',
+      priority: priority === 'consultation' ? 'consultation' : 'examination',
+      // visitType: priority === 'consultation' ? 'consultation' : 'examination',
     };
 
     console.log('Adding to queue:', queueData);
@@ -94,9 +95,15 @@ const realQueueApi = {
   },
 
   getQueueStats: async () => {
-    // Compute stats from today's queue to include consultation vs visit counts
-    const todayQueue = await realQueueApi.getTodayQueue();
-    return computeQueueStats(todayQueue);
+    // Backend provides authoritative stats for today (includes completed)
+    try {
+      return await httpClient.get('/queues/stats');
+    } catch (error) {
+      // Fallback to computed stats if endpoint is unavailable
+      console.error('Failed to fetch queue stats:', error);
+      const todayQueue = await realQueueApi.getTodayQueue();
+      return computeQueueStats(todayQueue);
+    }
   },
 };
 

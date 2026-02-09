@@ -38,6 +38,7 @@ const realVisitApi = {
     // Backend doesn't have this endpoint, get all and filter
     // Get all visits without pagination
     const response = await httpClient.get('/visits?limit=999999');
+    console.log('getPatientVisits response.data',response.data);
     const visits = response.data || response;
     const filtered = visits.filter(v => String(v.patientId) === String(patientId));
     return filtered.map(adaptVisit);

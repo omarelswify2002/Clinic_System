@@ -1,13 +1,22 @@
 import { format, formatDistance, parseISO } from 'date-fns';
+import { arSA, enUS } from 'date-fns/locale';
 
-export const formatDate = (date, formatStr = 'PPP') => {
+const getDateFnsLocale = (language) => (language === 'ar' ? arSA : enUS);
+
+export const formatDate = (date, formatStr = 'dd MMMM yyyy') => {
   if (!date) return '';
   const dateObj = typeof date === 'string' ? parseISO(date) : date;
   return format(dateObj, formatStr);
 };
 
+export const formatDateWithLocale = (date, formatStr = 'dd MMMM yyyy', language = 'en') => {
+  if (!date) return '';
+  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+  return format(dateObj, formatStr, { locale: getDateFnsLocale(language) });
+};
+
 export const formatDateTime = (date) => {
-  return formatDate(date, 'PPP p');
+  return formatDate(date, 'dd MMMM yyyy p');
 };
 
 export const formatTime = (date) => {

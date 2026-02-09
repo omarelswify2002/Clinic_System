@@ -17,15 +17,19 @@ export const adaptPatient = (backendPatient) => {
   const [firstName = '', ...lastNameParts] = (backendPatient.name || '').split(' ');
   const lastName = lastNameParts.join(' ') || '';
 
+  const normalizedDob = backendPatient.dateOfBirth || backendPatient.date_of_birth || null;
+
   return {
     id: String(backendPatient.id),
     firstName,
     lastName,
     age: backendPatient.age,
     nationalId: backendPatient.nationalID || '',
-    dateOfBirth: backendPatient.age
-      ? new Date(new Date().getFullYear() - backendPatient.age, 0, 1).toISOString()
-      : new Date().toISOString(),
+    dateOfBirth: normalizedDob
+      ? new Date(normalizedDob).toISOString()
+      : backendPatient.age
+        ? new Date(new Date().getFullYear() - backendPatient.age, 0, 1).toISOString()
+        : new Date().toISOString(),
     gender: backendPatient.gender ? backendPatient.gender.toLowerCase() : 'male',
     phone: backendPatient.phone || '',
     email: '', // Backend doesn't have email
@@ -54,6 +58,9 @@ export const adaptPatientToBackend = (frontendPatient) => {
   const backendData = {
     name: `${frontendPatient.firstName} ${frontendPatient.lastName}`.trim(),
     age,
+    dateOfBirth: frontendPatient.dateOfBirth
+      ? new Date(frontendPatient.dateOfBirth).toISOString()
+      : null,
     gender: capitalizeGender(frontendPatient.gender),
     phone: frontendPatient.phone,
     bloodType: frontendPatient.bloodType || null,
@@ -110,7 +117,7 @@ export const adaptVisit = (backendVisit) => {
     notes: backendVisit.notes || '',
     status: statusMap[backendVisit.status] || 'scheduled',
     visitDate: backendVisit.visitDate,
-    visitType: backendVisit.visitType || backendVisit.type || 'visit',
+    visitType: backendVisit.visitType || backendVisit.type || 'examination',
     prescriptions: backendVisit.prescriptions?.map(adaptPrescription) || [],
   };
 };
