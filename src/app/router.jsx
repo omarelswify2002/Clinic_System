@@ -11,6 +11,9 @@ import Dashboard from '../features/dashboard/Dashboard';
 import PatientList from '../features/patients/PatientList';
 import PatientDetails from '../features/patients/PatientDetails';
 import QueueManagement from '../features/queue/QueueManagement';
+import AppointmentManagement from '../features/appointments/AppointmentManagement';
+import AppointmentSchedule from '../features/appointments/AppointmentSchedule';
+import ClinicHoursSettings from '../features/appointments/ClinicHoursSettings';
 import VisitList from '../features/visits/VisitList';
 // import NewVisit from '../features/visits/NewVisit';
 import VisitDetails from '../features/visits/VisitDetails';
@@ -61,6 +64,18 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.QUEUE,
         element: <QueueManagement />,
+      },
+      {
+        path: ROUTES.APPOINTMENTS,
+        element: <AppointmentManagement />,
+      },
+      {
+        path: ROUTES.APPOINTMENT_SCHEDULE,
+        element: <AppointmentSchedule />,
+      },
+      {
+        path: ROUTES.CLINIC_HOURS,
+        element: <ClinicHoursSettings />,
       },
       {
         path: ROUTES.VISITS,

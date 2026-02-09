@@ -6,6 +6,9 @@ export const ROUTES = {
   PATIENTS: '/patients',
   PATIENT_DETAILS: '/patients/:nationalId',
   QUEUE: '/queue',
+  APPOINTMENTS: '/appointments',
+  APPOINTMENT_SCHEDULE: '/appointments/schedule',
+  CLINIC_HOURS: '/clinic-hours',
   VISITS: '/visits',
   VISIT_NEW: '/visits/new',
   VISIT_DETAILS: '/visits/:visitId',
@@ -14,4 +17,3 @@ export const ROUTES = {
   PRESCRIPTION_DETAILS: '/prescriptions/:prescriptionId',
   PRESCRIPTION_EDIT: '/prescriptions/:prescriptionId/edit',
 };
-

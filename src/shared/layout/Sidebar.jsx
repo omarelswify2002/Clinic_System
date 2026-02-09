@@ -6,6 +6,8 @@ import {
   ClipboardList,
   FileText,
   Pill,
+  Calendar,
+  Clock,
   X
 } from 'lucide-react';
 import { ROUTES } from '../constants';
@@ -18,6 +20,8 @@ const navItems = [
   { path: ROUTES.DASHBOARD, icon: LayoutDashboard, labelKey: 'nav.dashboard', permission: null },
   { path: ROUTES.PATIENTS, icon: Users, labelKey: 'nav.patients', permission: PERMISSIONS.VIEW_PATIENTS },
   { path: ROUTES.QUEUE, icon: ClipboardList, labelKey: 'nav.queue', permission: PERMISSIONS.VIEW_QUEUE },
+  { path: ROUTES.APPOINTMENTS, icon: Calendar, labelKey: 'nav.appointments', permission: PERMISSIONS.VIEW_APPOINTMENTS },
+  { path: ROUTES.CLINIC_HOURS, icon: Clock, labelKey: 'nav.clinicHours', permission: PERMISSIONS.MANAGE_CLINIC_HOURS },
   { path: ROUTES.VISITS, icon: FileText, labelKey: 'nav.visits', permission: PERMISSIONS.VIEW_VISITS },
   { path: ROUTES.PRESCRIPTIONS, icon: Pill, labelKey: 'nav.prescriptions', permission: PERMISSIONS.VIEW_PRESCRIPTIONS },
 ];
@@ -103,4 +107,3 @@ export default function Sidebar() {
     </>
   );
 }
-
